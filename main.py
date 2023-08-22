@@ -1,113 +1,8 @@
-import re
+from validators import *
+from fields import *
 
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
-MAX_LENGTH = 255
-MIN_LENGTH = 0
-
-
-class ValidationError(Exception):
-    pass
-
-
-class LenValidator:
-    def __init__(self, limit_value):
-        self.limit_value = limit_value
-
-    def __call__(self, value):
-        if not self.compare(self.limit_value, len(value)):
-            raise ValidationError
-
-
-class MaxLengthValidator(LenValidator):
-
-    def compare(self, a, b):
-        return a >= b
-
-
-class MinLengthValidator(LenValidator):
-    def compare(self, a, b):
-        return a <= b
-
-
-class RegExValidator:
-    reg_ex = ''
-    error_text = ''
-
-    def __call__(self, value):
-        if not re.match(self.reg_ex, value):
-            raise ValidationError
-
-
-class NameRegExValidator(RegExValidator):
-    reg_ex = '^[A-Za-zА-ЯЁа-яё]*$'
-    error_text = 'Разрешены только руские и английские буквы'
-
-
-class NumberOnlyRegExValidator(RegExValidator):
-    reg_ex = '^\d*$'
-    error_text = 'Разрешены только цифры'
-
-
-class Field:
-    max_length = MAX_LENGTH
-    min_length = MIN_LENGTH
-    default_validators = []
-
-    def __init__(self, value, *,
-                 max_length=None,
-                 min_length=None,
-                 verbose_name=None,
-                 unique=False,
-                 validators=None,
-                 ):
-        self.value = value
-        self.max_length = max_length if max_length else self.max_length
-        self.min_length = min_length if min_length else self.min_length
-        self.verbose_name = verbose_name
-        self.unique = unique
-        self.validators = [] if not validators else validators
-
-        self._clean()
-        self._validate()
-
-    def __str__(self):
-        return f'{self.value: <{self.max_length}}'
-
-    def _check_length_attrs(self):
-        if self.min_length > self.max_length:
-            raise ValidationError()
-        if not (self.max_length > 0 and self.max_length < MAX_LENGTH):
-            raise ValidationError('Длина поня долджны быть в диапозоне от 0 до 255')
-        if self.min_length < 0:
-            raise ValidationError()
-
-    def get_value(self):
-        return self.value
-
-    @property
-    def _length_validators(self):
-        return [MaxLengthValidator(self.max_length),
-                MinLengthValidator(self.min_length), ]
-
-    def _validate(self):
-        validators = [*self._length_validators, *self.default_validators, *self.validators]
-        for validator in validators:
-            print(validator)
-            validator(self.get_value())
-
-    def _clean(self):
-        self.value = self.value.strip()
-
-
-class CharField(Field):
-    pass
-
-
-class IntegerField(CharField):
-    default_validators = [
-        NumberOnlyRegExValidator()
-    ]
 
 
 class PhoneRecord:
@@ -217,4 +112,5 @@ class PhoneBook:
 
 
 if __name__ == '__main__':
-    seed_db()
+    # seed_db()
+    field = CharField('123', max_length=1000, verbose_name='xxx')
