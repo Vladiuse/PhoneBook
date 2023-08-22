@@ -1,14 +1,35 @@
 from validators import *
 from fields import *
+from enum import Enum
 
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
 
 
-class PhoneRecord:
+class Model:
+
+    def __init__(self):
+        self.errors = []
+
+    def render(self):
+        fields_val = [str(field) for field_name, field in self.fields]
+        return SEP_CHAR.join(fields_val) + NEW_LINE_CHAR
+
+    @staticmethod
+    def parse(line):
+        return PhoneRecord(*line.split(SEP_CHAR))
+
+    @property
+    def fields(self):
+        fields = {field_name: field for field_name, field in self.__dict__.items() if isinstance(field, Field)}
+        return fields
+
+
+class PhoneRecord(Model):
 
     def __init__(self, first_name, last_name, sur_name,
                  organization_name, work_phone, phone):
+        super().__init__()
         self.first_name = CharField(
             first_name,
             max_length=20,
@@ -40,14 +61,6 @@ class PhoneRecord:
             max_length=12,
             unique=True,
         )
-
-    def render(self):
-        fields_val = [str(field) for var, field in self.__dict__.items()]
-        return SEP_CHAR.join(fields_val) + NEW_LINE_CHAR
-
-    @staticmethod
-    def parse(line):
-        return PhoneRecord(*line.split(SEP_CHAR))
 
 
 class DataBase:
@@ -112,5 +125,5 @@ class PhoneBook:
 
 
 if __name__ == '__main__':
-    # seed_db()
+    seed_db()
     field = CharField('123', max_length=1000, verbose_name='xxx')

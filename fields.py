@@ -1,3 +1,6 @@
+from exceptions import *
+from validators import *
+
 MAX_LENGTH = 255
 MIN_LENGTH = 0
 
@@ -28,6 +31,9 @@ class Field:
 
     def __str__(self):
         return f'{self.value: <{self.max_length}}'
+
+    def __repr__(self):
+        return f'{self.field_name}: {self.value}'
 
     def _check_length_attrs(self):
         if self.min_length > self.max_length:
