@@ -1,30 +1,72 @@
 import re
 
-
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
+MAX_LENGTH = 255
+MIN_LENGTH = 0
 
 
 class ValidationError(Exception):
     pass
 
 
-class LenValidateError(Exception):
-    pass
+class LenValidator:
+    def __init__(self, limit_value):
+        self.limit_value = limit_value
+
+    def __call__(self, value):
+        if not self.compare(self.limit_value, len(value)):
+            raise ValidationError
+
+
+class MaxLengthValidator(LenValidator):
+
+    def compare(self, a, b):
+        return a >= b
+
+
+class MinLengthValidator(LenValidator):
+    def compare(self, a, b):
+        return a <= b
+
+
+class RegExValidator:
+    reg_ex = ''
+    error_text = ''
+
+    def __call__(self, value):
+        if not re.match(self.reg_ex, value):
+            raise ValidationError
+
+
+class NameRegExValidator(RegExValidator):
+    reg_ex = '^[A-Za-zА-ЯЁа-яё]*$'
+    error_text = 'Разрешены только руские и английские буквы'
+
+
+class NumberOnlyRegExValidator(RegExValidator):
+    reg_ex = '^\d*$'
+    error_text = 'Разрешены только цифры'
 
 
 class Field:
-    max_length = 30
-    min_length = 1
-    reg_ex = ''
-    validation_error_text = ''
+    max_length = MAX_LENGTH
+    min_length = MIN_LENGTH
+    default_validators = []
 
-    def __init__(self, value, *,max_length=None, verbose_name=None,reg_ex=None, unique=False):
+    def __init__(self, value, *,
+                 max_length=None,
+                 min_length=None,
+                 verbose_name=None,
+                 unique=False,
+                 validators=None,
+                 ):
         self.value = value
-        self.max_length = max_length if max_length else Field.max_length
-        self.reg_ex = reg_ex if reg_ex else Field.reg_ex
+        self.max_length = max_length if max_length else self.max_length
+        self.min_length = min_length if min_length else self.min_length
         self.verbose_name = verbose_name
         self.unique = unique
+        self.validators = [] if not validators else validators
 
         self._clean()
         self._validate()
@@ -32,52 +74,80 @@ class Field:
     def __str__(self):
         return f'{self.value: <{self.max_length}}'
 
+    def _check_length_attrs(self):
+        if self.min_length > self.max_length:
+            raise ValidationError()
+        if not (self.max_length > 0 and self.max_length < MAX_LENGTH):
+            raise ValidationError('Длина поня долджны быть в диапозоне от 0 до 255')
+        if self.min_length < 0:
+            raise ValidationError()
+
+    def get_value(self):
+        return self.value
+
+    @property
+    def _length_validators(self):
+        return [MaxLengthValidator(self.max_length),
+                MinLengthValidator(self.min_length), ]
 
     def _validate(self):
-
-        self._reg_validate()
-        self.length_validate()
+        validators = [*self._length_validators, *self.default_validators, *self.validators]
+        for validator in validators:
+            print(validator)
+            validator(self.get_value())
 
     def _clean(self):
         self.value = self.value.strip()
 
-    def _reg_validate(self):
-        if self.reg_ex:
-            if not re.match(self.reg_ex, self.value):
-                print(self.value)
-                raise ValidationError(str(self.validation_error_text))
-
-    def length_validate(self):
-        if len(self.value) < self.min_length:
-            raise LenValidateError(self.value)
-        if len(self.value) > self.max_length:
-            raise LenValidateError(self.value)
-
-
-class IntegerField(Field):
-    reg_ex = '^\d*$'
-    validation_error_text='Допускаються только цифры'
-
 
 class CharField(Field):
-    # reg_ex = '^[A-Za-zА-Яа-я]*$'
     pass
 
 
+class IntegerField(CharField):
+    default_validators = [
+        NumberOnlyRegExValidator()
+    ]
+
+
 class PhoneRecord:
-    NAME_REG_EX = '^[A-Za-zА-ЯЁа-яё]*$'
 
     def __init__(self, first_name, last_name, sur_name,
                  organization_name, work_phone, phone):
-        self.first_name = CharField(first_name, max_length=20, reg_ex=PhoneRecord.NAME_REG_EX)
-        self.last_name = CharField(last_name, max_length=20, reg_ex=PhoneRecord.NAME_REG_EX)
-        self.sur_name = CharField(sur_name, max_length=20, reg_ex=PhoneRecord.NAME_REG_EX)
-        self.organization_name = CharField(organization_name, max_length=50)
-        self.work_phone = IntegerField(work_phone, max_length=12, unique=True)
-        self.phone = IntegerField(phone, max_length=12, unique=True)
+        self.first_name = CharField(
+            first_name,
+            max_length=20,
+            validators=[NameRegExValidator(), ],
+        )
+        self.last_name = CharField(
+            last_name,
+            max_length=20,
+            validators=[NameRegExValidator(), ],
+        )
+        self.sur_name = CharField(
+            sur_name,
+            max_length=20,
+            validators=[NameRegExValidator(), ],
+        )
+        self.organization_name = CharField(
+            organization_name,
+            max_length=50,
+        )
+        self.work_phone = IntegerField(
+            work_phone,
+            min_length=9,
+            max_length=12,
+            unique=True,
+        )
+        self.phone = IntegerField(
+            phone,
+            min_length=9,
+            max_length=12,
+            unique=True,
+        )
 
-    def raw_data(self):
-        fields_val = [str(field) for var,field in self.__dict__.items()]
+    def render(self):
+        fields_val = [str(field) for var, field in self.__dict__.items()]
         return SEP_CHAR.join(fields_val) + NEW_LINE_CHAR
 
     @staticmethod
@@ -85,10 +155,8 @@ class PhoneRecord:
         return PhoneRecord(*line.split(SEP_CHAR))
 
 
-
 class DataBase:
     db_file = 'db.call'
-
 
     def write(self):
         pass
@@ -104,6 +172,7 @@ class DataBase:
 def clean_phone(phone):
     return ''.join(char for char in phone if char.isdigit())
 
+
 def seed_db():
     from faker import Faker
     faker = Faker('ru')
@@ -117,13 +186,18 @@ def seed_db():
             phone=clean_phone(faker.phone_number()),
             work_phone=clean_phone(faker.phone_number())
         )
-        db.append(phone.raw_data())
+        db.append(phone.render())
+
+
 class PhoneBook:
     db_file = 'db.call'
 
     def __init__(self):
         self.work_phones = dict()
         self.lines = list()
+
+    def __len__(self):
+        return len(self.lines)
 
     def read_db(self):
         with open(self.db_file) as file:
@@ -132,22 +206,15 @@ class PhoneBook:
                 self.lines.append(phone)
                 self.work_phones[phone.work_phone] = phone
 
-    def order_book(self):
+    def _order_records(self):
         self.lines.sort()
 
-
     def save(self):
+        self._order_records()
         with open(self.db_file, 'w') as file:
             for phone in self.lines:
-                file.write(phone.raw_data())
-
-    def __len__(self):
-        return len(self.lines)
+                file.write(phone.render())
 
 
 if __name__ == '__main__':
-    book = PhoneBook()
-    book.read_db()
-    print(len(book))
-    book.save()
-    # seed_db()
+    seed_db()
