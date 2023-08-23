@@ -5,6 +5,16 @@ from enum import Enum
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
 
+class QuerySet:
+
+    def __init__(self, model_class, objects):
+        self.models_class = model_class
+        self.objects = objects
+
+    def __getitem__(self, item):
+        return self.objects[item]
+
+
 class Manager:
     db_file = 'db.call'
 
@@ -20,7 +30,7 @@ class Manager:
         self.unique_keys = {}
 
     def read_db(self):
-        sealf._clean_data()
+        self._clean_data()
         with open(self.db_file) as file:
             for _id, line in enumerate(file):
                 phone = PhoneRecord.parse(line)
@@ -38,6 +48,12 @@ class Manager:
     def save(self, model):
         self.objects.append(model)
         print(model)
+
+    def all(self):
+        self.read_db()
+        qs = QuerySet(PhoneRecord, self.objects)
+        return qs
+
 
 
 
@@ -72,7 +88,7 @@ class Model:
                 self._errors_messages.extend(field.errors_messages)
 
     def render(self):
-        fields_val = [str(field) for field in self.fields_list]
+        fields_val = [field.render() for field in self.fields_list]
         return SEP_CHAR.join(fields_val) + NEW_LINE_CHAR
 
     def save(self):
@@ -112,11 +128,13 @@ class PhoneRecord(Model):
             first_name,
             max_length=20,
             validators=[NameRegExValidator(), ],
+            verbose_name='Имя',
         )
         self.last_name = CharField(
             last_name,
             max_length=20,
             validators=[NameRegExValidator(), ],
+            verbose_name='Фамилия',
         )
         self.sur_name = CharField(
             sur_name,
@@ -181,7 +199,42 @@ def seed_db(count=10):
 class PhoneBookReader:
     db_file = 'db.call'
 
+    def print_all(self):
+        phones = PhoneRecord.objects.all()
+        self.print_objects(phones)
+
+
+    @staticmethod
+    def field_value_max_length(field_name, qs):
+        return max(len(object.fields[field_name].get_value()) for object in qs.objects)
+
+    def print_objects(self, qs):
+        colls_width = self.fields_max_lengths(qs,padding_size=1)
+        for object in qs:
+            rendered_fields = []
+            for field_name, field in object.fields.items():
+                rendered_fields.append(field.render(colls_width[field_name]))
+            line = '|'+'|'.join(rendered_fields)+'|'
+            print(line)
+
+    def fields_max_lengths(self, qs, padding_size=0):
+        colls_width = {}
+        obj = qs[0]
+        for field_name, field in obj.fields.items():
+            field_max_leng = PhoneBookReader.field_value_max_length(field_name, qs)
+            colls_width[field_name] = field_max_leng + padding_size
+        print(colls_width)
+        return colls_width
+
+
+
+
 
 if __name__ == '__main__':
-    seed_db()
-    PhoneRecord.objects.update_db()
+    phone_book = PhoneBookReader()
+    phone_book.print_all()
+
+    #
+    # seed_db()
+    # PhoneRecord.objects.update_db()
+

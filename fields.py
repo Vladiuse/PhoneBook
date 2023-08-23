@@ -34,6 +34,13 @@ class Field:
     def __str__(self):
         return f'{self.value: <{self.max_length}}'
 
+    def render(self, max_length=None):
+
+        if not max_length:
+            max_length = self.max_length
+        return f'{self.value: <{max_length}}'
+
+
     def __repr__(self):
         return f'{self.field_name}: {self.value}'
 
