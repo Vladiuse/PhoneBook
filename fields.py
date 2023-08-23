@@ -25,15 +25,37 @@ class Field:
         self.unique = unique
         self.validators = [] if not validators else validators
 
+        self.is_error = False
+        self.errors_messages = []
+
         self._check_length_attrs()
         self._clean()
-        self._validate()
 
     def __str__(self):
         return f'{self.value: <{self.max_length}}'
 
     def __repr__(self):
         return f'{self.field_name}: {self.value}'
+
+    def __gt__(self, other):
+        if not isinstance(other,self.__class__):
+            raise FieldTypeError(self, other, '<')
+        return self.get_value() > other.get_value()
+
+    def __lt__(self, other):
+        if not isinstance(other,self.__class__):
+            raise FieldTypeError(self, other, '>')
+        return self.get_value() < other.get_value()
+
+    def __ge__(self, other):
+        if not isinstance(other,self.__class__):
+            raise FieldTypeError(self, other, '<=')
+        return self.get_value() >= other.get_value()
+
+    def __le__(self, other):
+        if not isinstance(other,self.__class__):
+            raise FieldTypeError(self, other, '>=')
+        return self.get_value() <= other.get_value()
 
     def _check_length_attrs(self):
         if self.min_length > self.max_length:
@@ -54,10 +76,17 @@ class Field:
         return [MaxLengthValidator(self.max_length),
                 MinLengthValidator(self.min_length), ]
 
+    def validate(self):
+        self._validate()
+
     def _validate(self):
         validators = [*self._length_validators, *self.default_validators, *self.validators]
         for validator in validators:
-            validator(self.get_value())
+            try:
+                validator(self.get_value())
+            except ValidationError as error:
+                self.errors_messages.append(error)
+                self.is_error = True
 
     def _clean(self):
         self.value = self.value.strip()
