@@ -5,6 +5,7 @@ from enum import Enum
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
 
+
 class QuerySet:
 
     def __init__(self, model_class, objects):
@@ -55,9 +56,6 @@ class Manager:
         return qs
 
 
-
-
-
 class Model:
 
     def __init__(self):
@@ -102,7 +100,6 @@ class Model:
     def _save(self):
         self.objects.save(self)
 
-
     @classmethod
     def parse(cls, line):
         return cls(*line.split(SEP_CHAR))
@@ -118,7 +115,6 @@ class Model:
 
 
 class PhoneRecord(Model):
-
     objects = Manager()
 
     def __init__(self, first_name, last_name, sur_name,
@@ -203,21 +199,35 @@ class PhoneBookReader:
         phones = PhoneRecord.objects.all()
         self.print_objects(phones)
 
-
     @staticmethod
     def field_value_max_length(field_name, qs):
         return max(len(object.fields[field_name].get_value()) for object in qs.objects)
 
     def print_objects(self, qs):
-        colls_width = self.fields_max_lengths(qs,padding_size=1)
+        colls_width = PhoneBookReader.fields_max_lengths(qs, padding_size=1)
+        self.print_head(qs, colls_width)
+        self.print_lines(qs, colls_width)
+
+
+    def print_head(self, qs, colls_width):
+        obj = qs[0]
+        head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
+        line = '|'+'|'.join(head)+'|'
+        print(line)
+        print('|'+'-'*(len(line)-2)+'|')
+
+
+    def print_lines(self,qs, colls_width):
         for object in qs:
             rendered_fields = []
             for field_name, field in object.fields.items():
                 rendered_fields.append(field.render(colls_width[field_name]))
-            line = '|'+'|'.join(rendered_fields)+'|'
+            line = '|' + '|'.join(rendered_fields) + '|'
             print(line)
 
-    def fields_max_lengths(self, qs, padding_size=0):
+
+    @staticmethod
+    def fields_max_lengths(qs, padding_size=0):
         colls_width = {}
         obj = qs[0]
         for field_name, field in obj.fields.items():
@@ -227,9 +237,6 @@ class PhoneBookReader:
         return colls_width
 
 
-
-
-
 if __name__ == '__main__':
     phone_book = PhoneBookReader()
     phone_book.print_all()
@@ -237,4 +244,3 @@ if __name__ == '__main__':
     #
     # seed_db()
     # PhoneRecord.objects.update_db()
-
