@@ -85,6 +85,40 @@ PhoneRecord._set_class()
 class PhoneBookReader:
     db_file = 'db.call'
 
+    def start(self):
+         self.hello()
+
+    def hello(self):
+        msg = """
+***************************
+*  Телефонный справочник  *
+***************************
+        """
+        print(msg.strip())
+
+
+    def print_commands(self, commadns):
+        display_commands = {}
+        counter = 1
+        for command_text, command_func in commadns.items():
+            display_commands[counter] = command_text
+            print(f'[{counter}] {command_text}')
+            counter += 1
+
+    def start_commands(self):
+        commands = {
+            'посмотреть записи': phone_book.print_all,
+            'Поиск': 'xx',
+            'Добавить запись': 'xx',
+            'Удалить запись': 'xx',
+            'Изменить запись': 'xx',
+        }
+        return commands
+
+    def bye(self):
+        print('Пока!')
+        exit()
+
     def print_all(self):
         phones = PhoneRecord.objects.all()
         self.print_objects(phones)
@@ -102,8 +136,9 @@ class PhoneBookReader:
         obj = qs[0]
         head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
         line = '|' + '|'.join(head) + '|'
+        print('+' + '-' * (len(line) - 2) + '+')
         print(line)
-        print('|' + '-' * (len(line) - 2) + '|')
+        print('+' + '-' * (len(line) - 2) + '+')
 
     def print_lines(self, qs, colls_width):
         for object in qs:
@@ -125,8 +160,17 @@ class PhoneBookReader:
 
 
 if __name__ == '__main__':
+    ENTER_COMM_NUMBER_MSG = 'Введите номер команды:'
     phone_book = PhoneBookReader()
-    phone_book.print_all()
+    phone_book.hello()
+    phone_book.print_commands(phone_book.start_commands())
+    while True:
+        command = input(ENTER_COMM_NUMBER_MSG)
+        if command != 'exit':
+            commands[command]()
+        else:
+            phone_book.bye()
+    # phone_book.print_all()
 
     #
     # seed_db()
