@@ -9,11 +9,18 @@ class Model:
     def __init__(self):
         self._errors_messages = []
         self._set_class()
+        self._field_names_setted = False
+
+
 
     @classmethod
     def _set_class(cls):
         cls.objects.model = cls
 
+
+    def _set_fields_name(self):
+        for field_name, field in self.fields.items():
+            field.name = field_name
 
     def is_valid(self):
         if not hasattr(self, '_is_valid'):
@@ -61,6 +68,9 @@ class Model:
     @property
     def fields(self):
         fields = {field_name: field for field_name, field in self.__dict__.items() if isinstance(field, Field)}
+        if not self._field_names_setted:
+            for field_name, field in fields.items():
+                field.name = field_name
         return fields
 
     @property

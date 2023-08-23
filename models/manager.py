@@ -1,4 +1,6 @@
 from .queryset import QuerySet
+
+
 class Manager:
     db_file = 'db.call'
 
@@ -33,6 +35,9 @@ class Manager:
     def save(self, model):
         self.objects.append(model)
         print(model)
+
+    def get_queryset(self):
+        pass
 
     def all(self):
         self.read_db()

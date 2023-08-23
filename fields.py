@@ -21,9 +21,10 @@ class Field:
         self.value = value
         self.max_length = max_length if max_length else self.max_length
         self.min_length = min_length if min_length else self.min_length
-        self.verbose_name = verbose_name if verbose_name else self.field_name
+        self._verbose_name = verbose_name
         self.unique = unique
         self.validators = [] if not validators else validators
+        self.name = None
 
         self.is_error = False
         self.errors_messages = []
@@ -33,6 +34,12 @@ class Field:
 
     def __str__(self):
         return f'{self.value: <{self.max_length}}'
+
+    @property
+    def verbose_name(self):
+        if self._verbose_name:
+            return self._verbose_name
+        return self.name
 
     def render(self, max_length=None):
 
