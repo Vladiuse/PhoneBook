@@ -18,13 +18,12 @@ class QuerySet:
         return max(len(object.fields[field_name].get_value()) for object in self.objects)
 
 
-    def fields_max_lengths(self, padding_size=0):
+    def fields_max_lengths(self, padding_size=1):
         colls_width = {}
         obj = self[0]
         for field_name, field in obj.fields.items():
             field_max_leng = self.field_value_max_length(field_name)
             colls_width[field_name] = field_max_leng + padding_size
-        print(colls_width)
         return colls_width
 
     def _print_head(self):

@@ -83,15 +83,32 @@ PhoneRecord._set_class()
 
 
 class PhoneBookReader:
+    ENTER_COMMAND_NUM_MSG = 'Введите номер команды:'
     db_file = 'db.call'
 
     def __init__(self):
+        self.command_title = None
         self.commands = None
 
-        self.set_commands(self.start_command())
 
-    def start(self):
-         self.hello()
+    def all_phones(self):
+        phones = PhoneRecord.objects.all()
+
+
+    def create_record(self):
+        pass
+
+
+
+class Client:
+    MENU_INPUT_TEXT = 'Введите номер команды:'
+    def __init__(self):
+        self._input_msg = ''
+        self._actions = {}
+        self._printed_text = ''
+
+        self.set_menu(self.start_menu)
+
 
     def hello(self):
         msg = """
@@ -101,23 +118,72 @@ class PhoneBookReader:
         """
         print(msg.strip())
 
-    def set_commands(self, commands):
-        res = dict()  # TODO make ordered dict
-        counter = 1
-        for command_text, command in commands.items():
-            res[str(counter)] = [command_text, command]
-            counter += 1
-        self.commands = res
+    def bye(self):
+        print('Пока!')
+        exit()
 
-    def print_command(self):
-        for command_code, command_data in self.commands.items():
+    def run(self):
+        if self._printed_text:
+            print(self._printed_text)
+        user_answer = input(self._input_msg)
+        command_method = self.get_action(user_answer)
+        if command_method.__name__.endswith('_menu'):
+            menu_method = command_method
+            self.set_menu(menu_method)
+        else:
+            command_method()
+
+    def get_action(self, user_answer):
+        if user_answer == 'exit':
+            self.bye()
+        if user_answer not in self._actions:
+            print('Wrong action')
+        else:
+            return self._actions[user_answer]
+
+    def set_actions(self, actions:dict):
+        self._actions = actions
+
+    def set_printed_text(self, text:str):
+        self._printed_text = text
+
+    def set_input_msg(self, msg):
+        self._input_msg = msg
+
+    def set_menu(self, menu_method):
+        enumerated_menu = self._enumerate_menu(menu_method)
+        self.set_actions(self._get_menu_actions(enumerated_menu))
+        self.set_printed_text(self._get_menu_text(enumerated_menu))
+        self._input_msg = self.MENU_INPUT_TEXT
+
+    def _get_menu_text(self, enumarated_menu):
+        lines = []
+        for command_code, command_data in enumarated_menu.items():
             command_text = command_data[0]
-            print(f'[{command_code}] {command_text}')
+            line = f'[{command_code}] {command_text}'
+            lines.append(line)
+        text = '\n'.join(lines)
+        return text
 
-    def start_command(self):
+    def _get_menu_actions(self,enumarated_menu):
+        actions = {}
+        for command_num, command_data in enumarated_menu.items():
+            actions[command_num] = command_data[1]
+        return actions
+
+    def _enumerate_menu(self, menu_method):
+        menu_data = menu_method()
+        enumerate_menu_actions = dict()  # TODO make ordered dict
+        counter = 1
+        for command_text, command in menu_data.items():
+            enumerate_menu_actions[str(counter)] = [command_text, command]
+            counter += 1
+        return enumerate_menu_actions
+
+    def start_menu(self):
         commands = {
-            'посмотреть записи': self.print_all,
-            'Поиск': 'xx',
+            'посмотреть записи': 'x',
+            'Поиск': self.search_menu,
             'Добавить запись': 'xx',
             'Удалить запись': 'xx',
             'Изменить запись': 'xx',
@@ -125,65 +191,25 @@ class PhoneBookReader:
         }
         return commands
 
-    def run_command(self, command_code):
-        command = self.commands[command_code][1]
-        command()
+
+    def search_menu(self):
+        commands = {
+            'Поиск по номеру': 'xxx',
+            'Поиск по имени': 'xxx',
+            'Назад': self.start_menu,
+        }
+        return commands
 
 
-    def bye(self):
-        print('Пока!')
-        exit()
 
-    def print_all(self):
-        phones = PhoneRecord.objects.all()
-        phones.print()
-    #
-    # @staticmethod
-    # def field_value_max_length(field_name, qs):
-    #     return max(len(object.fields[field_name].get_value()) for object in qs.objects)
 
-    # def print_objects(self, qs):
-    #     colls_width = PhoneBookReader.fields_max_lengths(qs, padding_size=1)
-    #     self._print_head(qs, colls_width)
-    #     self._print_lines(qs, colls_width)
-    #
-    # def _print_head(self, qs, colls_width):
-    #     obj = qs[0]
-    #     head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
-    #     line = '|' + '|'.join(head) + '|'
-    #     print('+' + '-' * (len(line) - 2) + '+')
-    #     print(line)
-    #     print('+' + '-' * (len(line) - 2) + '+')
-    #
-    # def _print_lines(self, qs, colls_width):
-    #     for object in qs:
-    #         rendered_fields = []
-    #         for field_name, field in object.fields.items():
-    #             rendered_fields.append(field.render(colls_width[field_name]))
-    #         line = '|' + '|'.join(rendered_fields) + '|'
-    #         print(line)
-    #
-    # @staticmethod
-    # def fields_max_lengths(qs, padding_size=0):
-    #     colls_width = {}
-    #     obj = qs[0]
-    #     for field_name, field in obj.fields.items():
-    #         field_max_leng = PhoneBookReader.field_value_max_length(field_name, qs)
-    #         colls_width[field_name] = field_max_leng + padding_size
-    #     print(colls_width)
-    #     return colls_width
 
 
 if __name__ == '__main__':
-    ENTER_COMM_NUMBER_MSG = 'Введите номер команды:'
-    phone_book = PhoneBookReader()
-    phone_book.hello()
+    client = Client()
+    client.hello()
     while True:
-        phone_book.print_command()
-        user_answer = input(ENTER_COMM_NUMBER_MSG)
-        phone_book.run_command(user_answer)
-    # phone_book.print_all()
-
+        client.run()
     #
     # seed_db()
     # PhoneRecord.objects.update_db()
