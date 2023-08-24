@@ -1,6 +1,6 @@
 from fields import *
 from models import Model
-from forms import PhoneRecordForm
+from forms import PhoneRecordForm, PhoneSearchIdForm
 
 def message(msg):
     print(msg)
@@ -122,17 +122,12 @@ class PhoneBookReader:
 
     def delete_form(self):
         while True:
-            model_id = input('Введите ID записи: ')
-            try:
-                model_id = int(model_id)
-            except ValueError:
-                print('ID состоит только из цифр!')
-            else:
-                phone = PhoneRecord.objects.get(pk=model_id)
-                phone.delete_form()
-                print(f'Запись с ID={model_id} удалена')
-                break
-
+            serach_form = PhoneSearchIdForm(model_class=PhoneRecord)
+            serach_form.run()
+            phone = serach_form.model
+            phone.delete()
+            print(f'Запись с ID={phone.pk} удалена')
+            break
 
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
@@ -245,9 +240,8 @@ class Client:
 
 
 if __name__ == '__main__':
-    phone = PhoneRecord.objects.get(pk=100)
-    # client = Client()
-    # client.hello()
-    # while True:
-    #     client.run()
+    client = Client()
+    client.hello()
+    while True:
+        client.run()
 

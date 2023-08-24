@@ -24,3 +24,6 @@ class ValidationError(Exception):
     def __repr__(self):
         return "Ошибка Валидации(%s)" % self.mgs
 
+
+class ObjectDoesNotExist(Exception):
+    pass

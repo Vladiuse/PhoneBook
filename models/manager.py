@@ -1,5 +1,6 @@
 from .queryset import QuerySet
 from .db import DataBase
+from exceptions import ObjectDoesNotExist
 
 class Manager:
     db = DataBase()
@@ -53,8 +54,11 @@ class Manager:
 
     def get(self,*,pk):
         self.get_objects_from_db()
-        print(self.objects)
-        return self.objects[pk]
+        try:
+            return self.objects[pk]
+        except KeyError:
+            raise ObjectDoesNotExist
+
 
     def get_queryset(self):
         pass
