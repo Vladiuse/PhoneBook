@@ -136,42 +136,42 @@ class PhoneBookReader:
 
     def print_all(self):
         phones = PhoneRecord.objects.all()
-        self.print_objects(phones)
+        phones.print()
+    #
+    # @staticmethod
+    # def field_value_max_length(field_name, qs):
+    #     return max(len(object.fields[field_name].get_value()) for object in qs.objects)
 
-    @staticmethod
-    def field_value_max_length(field_name, qs):
-        return max(len(object.fields[field_name].get_value()) for object in qs.objects)
-
-    def print_objects(self, qs):
-        colls_width = PhoneBookReader.fields_max_lengths(qs, padding_size=1)
-        self._print_head(qs, colls_width)
-        self._print_lines(qs, colls_width)
-
-    def _print_head(self, qs, colls_width):
-        obj = qs[0]
-        head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
-        line = '|' + '|'.join(head) + '|'
-        print('+' + '-' * (len(line) - 2) + '+')
-        print(line)
-        print('+' + '-' * (len(line) - 2) + '+')
-
-    def _print_lines(self, qs, colls_width):
-        for object in qs:
-            rendered_fields = []
-            for field_name, field in object.fields.items():
-                rendered_fields.append(field.render(colls_width[field_name]))
-            line = '|' + '|'.join(rendered_fields) + '|'
-            print(line)
-
-    @staticmethod
-    def fields_max_lengths(qs, padding_size=0):
-        colls_width = {}
-        obj = qs[0]
-        for field_name, field in obj.fields.items():
-            field_max_leng = PhoneBookReader.field_value_max_length(field_name, qs)
-            colls_width[field_name] = field_max_leng + padding_size
-        print(colls_width)
-        return colls_width
+    # def print_objects(self, qs):
+    #     colls_width = PhoneBookReader.fields_max_lengths(qs, padding_size=1)
+    #     self._print_head(qs, colls_width)
+    #     self._print_lines(qs, colls_width)
+    #
+    # def _print_head(self, qs, colls_width):
+    #     obj = qs[0]
+    #     head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
+    #     line = '|' + '|'.join(head) + '|'
+    #     print('+' + '-' * (len(line) - 2) + '+')
+    #     print(line)
+    #     print('+' + '-' * (len(line) - 2) + '+')
+    #
+    # def _print_lines(self, qs, colls_width):
+    #     for object in qs:
+    #         rendered_fields = []
+    #         for field_name, field in object.fields.items():
+    #             rendered_fields.append(field.render(colls_width[field_name]))
+    #         line = '|' + '|'.join(rendered_fields) + '|'
+    #         print(line)
+    #
+    # @staticmethod
+    # def fields_max_lengths(qs, padding_size=0):
+    #     colls_width = {}
+    #     obj = qs[0]
+    #     for field_name, field in obj.fields.items():
+    #         field_max_leng = PhoneBookReader.field_value_max_length(field_name, qs)
+    #         colls_width[field_name] = field_max_leng + padding_size
+    #     print(colls_width)
+    #     return colls_width
 
 
 if __name__ == '__main__':
