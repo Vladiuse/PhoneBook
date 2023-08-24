@@ -5,17 +5,11 @@ from .db import DataBase
 class Model:
     objects = Manager()
 
-    def __init__(self,pk):
+    def __init__(self,pk=None):
+        self.pk = pk
         self._errors_messages = {}
         self._set_class()
         self._field_names_setted = False
-
-        self.pk = PrimaryKeyField(
-            pk,
-            unique=True,
-            min_length=1,
-            max_length=6,
-        )
 
     @classmethod
     def _set_class(cls):
@@ -51,9 +45,22 @@ class Model:
             if field.is_error:
                 self._errors_messages[field.name] = field.errors_messages
 
+    def _render_pk(self, max_size=None):
+        if not max_size:
+            max_size = DataBase.pk_max_size
+        return f'{self.pk: <{max_size}}'
+
     def render(self):
         fields_val = [field.render() for field in self.fields_list]
+        fields_val.insert(0, self._render_pk())
         return DataBase.SEP_CHAR.join(fields_val) + DataBase.NEW_LINE_CHAR
+
+    @classmethod
+    def parse(cls, line):
+        pk, *attrs = line.split(DataBase.SEP_CHAR)
+        return cls(*attrs,pk=int(pk))
+
+
 
     def save(self):
         if not hasattr(self, '_is_valid'):
@@ -66,9 +73,7 @@ class Model:
     def _save(self):
         self.objects.save(self)
 
-    @classmethod
-    def parse(cls, line):
-        return cls(*line.split(DataBase.SEP_CHAR))
+
 
     @property
     def fields(self):

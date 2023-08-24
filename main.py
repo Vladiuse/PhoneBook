@@ -4,9 +4,9 @@ from models import Model
 
 class PhoneRecord(Model):
 
-    def __init__(self,pk, first_name, last_name, sur_name,
-                 organization_name, work_phone, phone):
-        super().__init__(pk)
+    def __init__(self,first_name, last_name, sur_name,
+                 organization_name, work_phone, phone, **kwargs):
+        super().__init__(**kwargs)
         self.first_name = CharField(
             first_name,
             max_length=20,
@@ -73,7 +73,6 @@ class PhoneBookReader:
         return fields
 
     def get_form_fields(self, initial_data=None, fields=None):
-        print(initial_data, fields)
         form_data = {}
         if initial_data:
             form_data = initial_data
@@ -86,7 +85,7 @@ class PhoneBookReader:
                 print(error_value, error_text)
             user_answer = input(f'Введите {field_name}:')
             form_data[field_name] = user_answer
-        phone = PhoneRecord(pk=None,**form_data)
+        phone = PhoneRecord(**form_data)
         if phone.is_valid():
             print('SAVE')
             phone.save()

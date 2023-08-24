@@ -34,8 +34,8 @@ class Manager:
     def save(self, model):
         if self.objects is None:
             self.get_objects()
-        if not model.pk.get_value():
-            model.pk.set_value(self.db.get_new_pk())
+        if not model.pk:
+            model.pk = self.db.get_new_pk()
         self.objects.append(model)
         self.update_db()
 
@@ -43,7 +43,7 @@ class Manager:
         pass
 
     def all(self):
-        self.read_db()
+        self.get_objects()
         qs = QuerySet(self.model, self.objects)
         return qs
 

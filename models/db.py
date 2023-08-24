@@ -2,6 +2,8 @@ class DataBase:
     db_file = 'db.call'
     SEP_CHAR = '|'
     NEW_LINE_CHAR = '\n'
+    pk_field_name = 'ID'
+    pk_max_size = 6
 
     def __init__(self):
         self.pk = None
@@ -13,7 +15,6 @@ class DataBase:
     def read(self):
         with open(self.db_file) as file:
             pk_line = file.readline()
-            print(pk_line)
             self._get_pk_from_file(pk_line)
             table = file.read()
             if table:
