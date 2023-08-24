@@ -1,5 +1,9 @@
 from fields import *
 from models import Model
+from forms import PhoneRecordForm
+
+def message(msg):
+    print(msg)
 
 
 class PhoneRecord(Model):
@@ -82,7 +86,7 @@ class PhoneBookReader:
         if initial_data:
             form_data = initial_data
         if not fields:
-            fields = self.form_fields()
+            fields = PhoneRecordForm.get_form()
         for field_name, error in fields.items():
             if error:
                 error_value = error['value']
@@ -100,7 +104,7 @@ class PhoneBookReader:
             incorrect_fields = phone.get_invalid_fields()
             return self.get_form_fields(initial_data=correct_fields, fields=incorrect_fields)
 
-    def delete(self):
+    def edit_form(self):
         while True:
             model_id = input('Введите ID записи: ')
             try:
@@ -109,7 +113,23 @@ class PhoneBookReader:
                 print('ID состоит только из цифр!')
             else:
                 phone = PhoneRecord.objects.get(pk=model_id)
-                phone.delete()
+                message('Обновите поля формы (если не вводить значение,поле не будет изменено')
+                form = PhoneRecordForm.get_form(phone)
+                for field_name, field_value in form.items():
+                    message(f'Текущее значение: {field_value}')
+                    input(f'Новое значение {field_name}: ')
+                break
+
+    def delete_form(self):
+        while True:
+            model_id = input('Введите ID записи: ')
+            try:
+                model_id = int(model_id)
+            except ValueError:
+                print('ID состоит только из цифр!')
+            else:
+                phone = PhoneRecord.objects.get(pk=model_id)
+                phone.delete_form()
                 print(f'Запись с ID={model_id} удалена')
                 break
 
@@ -201,8 +221,8 @@ class Client:
             'посмотреть записи': self.phone_reader.all_phones,
             'Поиск': self.search_menu,
             'Добавить запись': self.phone_reader.get_form_fields,
+            'Изменить запись': self.phone_reader.edit_form,
             'Удалить запись': self.delete_menu,
-            'Изменить запись': 'xx',
             'Выйти': self.bye,
         }
         return commands
@@ -210,7 +230,7 @@ class Client:
     def delete_menu(self):
         commands = {
             'Найти и удалить': self.search_menu,
-            'Удалить по ID': self.phone_reader.delete,
+            'Удалить по ID': self.phone_reader.delete_form,
             'Выйти': self.bye,
         }
         return commands
@@ -225,10 +245,9 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.hello()
-    while True:
-        client.run()
-    #
-    # seed_db()
-    # PhoneRecord.objects.update_db()
+    phone = PhoneRecord.objects.get(pk=100)
+    # client = Client()
+    # client.hello()
+    # while True:
+    #     client.run()
+

@@ -39,3 +39,12 @@ class NameRegExValidator(RegExValidator):
 class NumberOnlyRegExValidator(RegExValidator):
     reg_ex = '^\d*$'
     error_text = 'Разрешены только цифры'
+#
+#
+# class PrimaryKeyValidator:
+#
+#     def __call__(self, value):
+#         try:
+#             int(value)
+#         except ValueError:
+#             raise ValidationError('ID должен состоять только из цифр')
