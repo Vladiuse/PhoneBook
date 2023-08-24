@@ -42,23 +42,6 @@ class PhoneRecord(Model):
         )
 
 PhoneRecord._set_class()
-print('MANAGER', PhoneRecord.objects.model)
-class DataBase:
-    db_file = 'db.call'
-
-    def write(self):
-        pass
-
-    def append(self, line):
-        with open(self.db_file, 'a') as file:
-            file.write(line)
-
-    def read(self, lines_count):
-        pass
-
-
-
-
 
 
 class PhoneBookReader:

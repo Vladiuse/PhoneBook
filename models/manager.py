@@ -1,12 +1,11 @@
 from .queryset import QuerySet
-
+from .db import DataBase
 
 class Manager:
-    db_file = 'db.call'
+    db = DataBase()
 
     def __init__(self):
         self.objects = None
-        self.unique_keys = {}
         self.model = None
 
     def __len__(self):
@@ -14,13 +13,12 @@ class Manager:
 
     def _clean_data(self):
         self.objects = []
-        self.unique_keys = {}
 
-    def read_db(self):
+    def get_objects(self):
         self._clean_data()
-        with open(self.db_file) as file:
-            for _id, line in enumerate(file):
-                phone = self.model.parse(line)
+        if self.db.table:
+            for row in self.db.get_rows():
+                phone = self.model.parse(row)
                 self.objects.append(phone)
 
     def _order_records(self):
@@ -28,18 +26,16 @@ class Manager:
 
     def update_db(self):
         self._order_records()
-        with open(self.db_file, 'w') as file:
-            for model in self.objects:
-                file.write(model.render())
+        self.db.write(self._objects_to_string())
 
-    def get_new_pk(self):
-        return len(self) + 1
+    def _objects_to_string(self):
+        return ''.join(model.render() for model in self.objects)
 
     def save(self, model):
         if self.objects is None:
-            self.read_db()
+            self.get_objects()
         if not model.pk.get_value():
-            model.pk.set_value(self.get_new_pk())
+            model.pk.set_value(self.db.get_new_pk())
         self.objects.append(model)
         self.update_db()
 

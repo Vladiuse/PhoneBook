@@ -1,7 +1,6 @@
-SEP_CHAR = '|'
-NEW_LINE_CHAR = '\n'
 from .manager import Manager
 from fields import Field, PrimaryKeyField
+from .db import DataBase
 
 class Model:
     objects = Manager()
@@ -56,7 +55,7 @@ class Model:
 
     def render(self):
         fields_val = [field.render() for field in self.fields_list]
-        return SEP_CHAR.join(fields_val) + NEW_LINE_CHAR
+        return DataBase.SEP_CHAR.join(fields_val) + DataBase.NEW_LINE_CHAR
 
     def save(self):
         if not hasattr(self, '_is_valid'):
@@ -71,7 +70,7 @@ class Model:
 
     @classmethod
     def parse(cls, line):
-        return cls(*line.split(SEP_CHAR))
+        return cls(*line.split(DataBase.SEP_CHAR))
 
     @property
     def fields(self):
@@ -85,7 +84,6 @@ class Model:
     @property
     def fields_list(self):
         return [field for field_name, field in self.fields.items()]
-
 
     def get_valid_fields(self):
         return {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
