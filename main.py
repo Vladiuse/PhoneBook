@@ -85,6 +85,11 @@ PhoneRecord._set_class()
 class PhoneBookReader:
     db_file = 'db.call'
 
+    def __init__(self):
+        self.commands = None
+
+        self.set_commands(self.start_command())
+
     def start(self):
          self.hello()
 
@@ -96,24 +101,34 @@ class PhoneBookReader:
         """
         print(msg.strip())
 
-
-    def print_commands(self, commadns):
-        display_commands = {}
+    def set_commands(self, commands):
+        res = dict()  # TODO make ordered dict
         counter = 1
-        for command_text, command_func in commadns.items():
-            display_commands[counter] = command_text
-            print(f'[{counter}] {command_text}')
+        for command_text, command in commands.items():
+            res[str(counter)] = [command_text, command]
             counter += 1
+        self.commands = res
 
-    def start_commands(self):
+    def print_command(self):
+        for command_code, command_data in self.commands.items():
+            command_text = command_data[0]
+            print(f'[{command_code}] {command_text}')
+
+    def start_command(self):
         commands = {
-            'посмотреть записи': phone_book.print_all,
+            'посмотреть записи': self.print_all,
             'Поиск': 'xx',
             'Добавить запись': 'xx',
             'Удалить запись': 'xx',
             'Изменить запись': 'xx',
+            'Выйти': self.bye,
         }
         return commands
+
+    def run_command(self, command_code):
+        command = self.commands[command_code][1]
+        command()
+
 
     def bye(self):
         print('Пока!')
@@ -129,10 +144,10 @@ class PhoneBookReader:
 
     def print_objects(self, qs):
         colls_width = PhoneBookReader.fields_max_lengths(qs, padding_size=1)
-        self.print_head(qs, colls_width)
-        self.print_lines(qs, colls_width)
+        self._print_head(qs, colls_width)
+        self._print_lines(qs, colls_width)
 
-    def print_head(self, qs, colls_width):
+    def _print_head(self, qs, colls_width):
         obj = qs[0]
         head = [f'{field.verbose_name: <{colls_width[field_name]}}' for field_name, field in obj.fields.items()]
         line = '|' + '|'.join(head) + '|'
@@ -140,7 +155,7 @@ class PhoneBookReader:
         print(line)
         print('+' + '-' * (len(line) - 2) + '+')
 
-    def print_lines(self, qs, colls_width):
+    def _print_lines(self, qs, colls_width):
         for object in qs:
             rendered_fields = []
             for field_name, field in object.fields.items():
@@ -163,13 +178,10 @@ if __name__ == '__main__':
     ENTER_COMM_NUMBER_MSG = 'Введите номер команды:'
     phone_book = PhoneBookReader()
     phone_book.hello()
-    phone_book.print_commands(phone_book.start_commands())
     while True:
-        command = input(ENTER_COMM_NUMBER_MSG)
-        if command != 'exit':
-            commands[command]()
-        else:
-            phone_book.bye()
+        phone_book.print_command()
+        user_answer = input(ENTER_COMM_NUMBER_MSG)
+        phone_book.run_command(user_answer)
     # phone_book.print_all()
 
     #

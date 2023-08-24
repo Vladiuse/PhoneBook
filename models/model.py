@@ -71,6 +71,7 @@ class Model:
         if not self._field_names_setted:
             for field_name, field in fields.items():
                 field.name = field_name
+
         return fields
 
     @property
