@@ -51,6 +51,9 @@ class Field:
     def __repr__(self):
         return f'{self.field_name}: {self.value}'
 
+    def __len__(self):
+        return len(str(self.get_value()))
+
     def __gt__(self, other):
         if not isinstance(other,self.__class__):
             raise FieldTypeError(self, other, '<')
@@ -115,3 +118,15 @@ class IntegerField(CharField):
     default_validators = [
         NumberOnlyRegExValidator()
     ]
+
+class PrimaryKeyField(Field):
+    field_name = 'PrimaryKeyField'
+
+    def _clean(self):
+        return self.value
+
+    def validate(self):
+        pass
+
+    def set_value(self, value):
+        self.value = value

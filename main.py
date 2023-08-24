@@ -4,9 +4,9 @@ from models import Model
 
 class PhoneRecord(Model):
 
-    def __init__(self, first_name, last_name, sur_name,
+    def __init__(self,pk, first_name, last_name, sur_name,
                  organization_name, work_phone, phone):
-        super().__init__()
+        super().__init__(pk)
         self.first_name = CharField(
             first_name,
             max_length=20,
@@ -41,7 +41,8 @@ class PhoneRecord(Model):
             unique=True,
         )
 
-
+PhoneRecord._set_class()
+print('MANAGER', PhoneRecord.objects.model)
 class DataBase:
     db_file = 'db.call'
 
@@ -57,7 +58,7 @@ class DataBase:
 
 
 
-PhoneRecord._set_class()
+
 
 
 class PhoneBookReader:
@@ -70,6 +71,7 @@ class PhoneBookReader:
 
     def all_phones(self):
         phones = PhoneRecord.objects.all()
+        phones.print()
 
     def create_record(self, **kwargs):
         pass
@@ -100,7 +102,7 @@ class PhoneBookReader:
                 print(error_value, error_text)
             user_answer = input(f'Введите {field_name}:')
             form_data[field_name] = user_answer
-        phone = PhoneRecord(**form_data)
+        phone = PhoneRecord(None,**form_data)
         if phone.is_valid():
             print('SAVE')
             phone.save()
@@ -194,7 +196,7 @@ class Client:
 
     def start_menu(self):
         commands = {
-            'посмотреть записи': 'x',
+            'посмотреть записи': self.phone_reader.all_phones,
             'Поиск': self.search_menu,
             'Добавить запись': self.phone_reader.get_form_fields,
             'Удалить запись': self.delete_menu,

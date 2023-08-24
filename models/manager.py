@@ -5,10 +5,9 @@ class Manager:
     db_file = 'db.call'
 
     def __init__(self):
-        self.objects = []
+        self.objects = None
         self.unique_keys = {}
         self.model = None
-        self.new_objects = []
 
     def __len__(self):
         return len(self.objects)
@@ -28,18 +27,20 @@ class Manager:
         self.objects.sort(key=lambda object: (object.first_name, object.last_name))
 
     def update_db(self):
-        self.read_db()
-        self._join_db_records_n_new()
         self._order_records()
         with open(self.db_file, 'w') as file:
             for model in self.objects:
                 file.write(model.render())
 
-    def _join_db_records_n_new(self):
-        self.objects.extend(self.new_objects)
+    def get_new_pk(self):
+        return len(self) + 1
 
     def save(self, model):
-        self.new_objects.append(model)
+        if self.objects is None:
+            self.read_db()
+        if not model.pk.get_value():
+            model.pk.set_value(self.get_new_pk())
+        self.objects.append(model)
         self.update_db()
 
     def get_queryset(self):

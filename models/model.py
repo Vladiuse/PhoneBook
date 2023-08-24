@@ -1,15 +1,22 @@
 SEP_CHAR = '|'
 NEW_LINE_CHAR = '\n'
 from .manager import Manager
-from fields import Field
+from fields import Field, PrimaryKeyField
 
 class Model:
     objects = Manager()
 
-    def __init__(self):
+    def __init__(self,pk):
         self._errors_messages = {}
         self._set_class()
         self._field_names_setted = False
+
+        self.pk = PrimaryKeyField(
+            pk,
+            unique=True,
+            min_length=1,
+            max_length=6,
+        )
 
 
 

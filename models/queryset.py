@@ -15,7 +15,7 @@ class QuerySet:
 
 
     def field_value_max_length(self,field_name):
-        return max(len(object.fields[field_name].get_value()) for object in self.objects)
+        return max(len(object.fields[field_name]) for object in self.objects)
 
 
     def fields_max_lengths(self, padding_size=1):
