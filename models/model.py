@@ -70,6 +70,9 @@ class Model:
         else:
             raise ValueError('Модель не проверена')
 
+    def delete(self):
+        self.objects.delete(self.pk)
+
     def _save(self):
         self.objects.save(self)
 

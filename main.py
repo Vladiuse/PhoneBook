@@ -4,7 +4,7 @@ from models import Model
 
 class PhoneRecord(Model):
 
-    def __init__(self,first_name, last_name, sur_name,
+    def __init__(self, first_name, last_name, sur_name,
                  organization_name, work_phone, phone, **kwargs):
         super().__init__(**kwargs)
         self.first_name = CharField(
@@ -41,6 +41,10 @@ class PhoneRecord(Model):
             unique=True,
         )
 
+    def __str__(self):
+        return f'<PhoneRec:{self.pk}>'
+
+
 PhoneRecord._set_class()
 
 
@@ -59,8 +63,9 @@ class PhoneBookReader:
     def create_record(self, **kwargs):
         pass
 
-    def add_record(self):
-        pass
+    def get_by_id(self, id):
+        phone = PhoneRecord.objects.get(pk=id)
+        print(phone)
 
     def form_fields(self):
         fields = {'first_name': '',
@@ -95,6 +100,19 @@ class PhoneBookReader:
             incorrect_fields = phone.get_invalid_fields()
             return self.get_form_fields(initial_data=correct_fields, fields=incorrect_fields)
 
+    def delete(self):
+        while True:
+            model_id = input('Введите ID записи: ')
+            try:
+                model_id = int(model_id)
+            except ValueError:
+                print('ID состоит только из цифр!')
+            else:
+                phone = PhoneRecord.objects.get(pk=model_id)
+                phone.delete()
+                print(f'Запись с ID={model_id} удалена')
+                break
+
 
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
@@ -128,6 +146,7 @@ class Client:
             menu_method = command_method
             self.set_menu(menu_method)
         else:
+            self.set_menu(self.start_menu)
             command_method()
 
     def get_action(self, user_answer):
@@ -191,7 +210,7 @@ class Client:
     def delete_menu(self):
         commands = {
             'Найти и удалить': self.search_menu,
-            'Удалить по номеру': self.search_menu,
+            'Удалить по ID': self.phone_reader.delete,
             'Выйти': self.bye,
         }
         return commands

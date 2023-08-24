@@ -1,9 +1,9 @@
 from .db import DataBase
 class QuerySet:
 
-    def __init__(self, model_class, objects):
+    def __init__(self, model_class, objects_list):
         self.models_class = model_class
-        self.objects = objects
+        self.objects = objects_list
 
         self.colls_width = self.fields_max_lengths()
 
