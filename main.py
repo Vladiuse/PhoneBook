@@ -90,25 +90,59 @@ class PhoneBookReader:
         self.command_title = None
         self.commands = None
 
-
     def all_phones(self):
         phones = PhoneRecord.objects.all()
 
-
-    def create_record(self):
+    def create_record(self, **kwargs):
         pass
 
+    def add_record(self):
+        pass
+
+    def form_fields(self):
+        fields = {'first_name': '',
+                  'last_name': '',
+                  'sur_name': '',
+                  'organization_name': '',
+                  'work_phone': '',
+                  'phone': '',
+                  }
+        return fields
+
+    def get_form_fields(self, initial_data=None, fields=None):
+        form_data = {}
+        if initial_data:
+            form_data = initial_data
+        if not fields:
+            fields = self.form_fields()
+        for field_name, error in fields.items():
+            if error:
+                error_value = error['value']
+                error_text = error['error']
+                print(error_value, error_text)
+            user_answer = input(f'Введите {field_name}:')
+            form_data[field_name] = user_answer
+        phone = PhoneRecord(**form_data)
+        if phone.is_valid():
+            print('SAVE')
+            phone.save()
+        else:
+            print('Eсть некорекнтые поля')
+            correct_fields = phone.get_valid_fields()
+            incorrect_fields = phone.get_invalid_fields()
+            return self.get_form_fields(initial_data=correct_fields, fields=incorrect_fields)
 
 
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
+
     def __init__(self):
+        self.phone_reader = PhoneBookReader()
         self._input_msg = ''
         self._actions = {}
         self._printed_text = ''
-
+        self._command_mode = True
         self.set_menu(self.start_menu)
-
 
     def hello(self):
         msg = """
@@ -141,10 +175,10 @@ class Client:
         else:
             return self._actions[user_answer]
 
-    def set_actions(self, actions:dict):
+    def set_actions(self, actions: dict):
         self._actions = actions
 
-    def set_printed_text(self, text:str):
+    def set_printed_text(self, text: str):
         self._printed_text = text
 
     def set_input_msg(self, msg):
@@ -157,7 +191,7 @@ class Client:
         self._input_msg = self.MENU_INPUT_TEXT
 
     def _get_menu_text(self, enumarated_menu):
-        lines = []
+        lines = ['\n']
         for command_code, command_data in enumarated_menu.items():
             command_text = command_data[0]
             line = f'[{command_code}] {command_text}'
@@ -165,7 +199,7 @@ class Client:
         text = '\n'.join(lines)
         return text
 
-    def _get_menu_actions(self,enumarated_menu):
+    def _get_menu_actions(self, enumarated_menu):
         actions = {}
         for command_num, command_data in enumarated_menu.items():
             actions[command_num] = command_data[1]
@@ -184,13 +218,20 @@ class Client:
         commands = {
             'посмотреть записи': 'x',
             'Поиск': self.search_menu,
-            'Добавить запись': 'xx',
-            'Удалить запись': 'xx',
+            'Добавить запись': self.phone_reader.get_form_fields,
+            'Удалить запись': self.delete_menu,
             'Изменить запись': 'xx',
             'Выйти': self.bye,
         }
         return commands
 
+    def delete_menu(self):
+        commands = {
+            'Найти и удалить': self.search_menu,
+            'Удалить по номеру': self.search_menu,
+            'Выйти': self.bye,
+        }
+        return commands
 
     def search_menu(self):
         commands = {
@@ -199,10 +240,6 @@ class Client:
             'Назад': self.start_menu,
         }
         return commands
-
-
-
-
 
 
 if __name__ == '__main__':

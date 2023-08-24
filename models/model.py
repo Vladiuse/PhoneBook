@@ -7,7 +7,7 @@ class Model:
     objects = Manager()
 
     def __init__(self):
-        self._errors_messages = []
+        self._errors_messages = {}
         self._set_class()
         self._field_names_setted = False
 
@@ -25,6 +25,7 @@ class Model:
     def is_valid(self):
         if not hasattr(self, '_is_valid'):
             self._check_fields()
+            self._collect_fields_errors()
             return self._is_valid
         return self._is_valid
 
@@ -44,7 +45,7 @@ class Model:
     def _collect_fields_errors(self):
         for field in self.fields_list:
             if field.is_error:
-                self._errors_messages.extend(field.errors_messages)
+                self._errors_messages[field.name] = field.errors_messages
 
     def render(self):
         fields_val = [field.render() for field in self.fields_list]
@@ -77,4 +78,22 @@ class Model:
     @property
     def fields_list(self):
         return [field for field_name, field in self.fields.items()]
+
+
+    def get_valid_fields(self):
+        return {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
+
+    def get_invalid_fields(self):
+        incorrect_fields = {}
+        for field_name, field in self.fields.items():
+            if field.is_error:
+                dic = {
+                    field.name: {
+                        'value': field.get_value(),
+                        'error': field.errors_messages,
+                    }
+                }
+                incorrect_fields.update(dic)
+        return incorrect_fields
+
 
