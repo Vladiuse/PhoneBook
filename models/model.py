@@ -57,7 +57,7 @@ class Model:
         if self.is_valid():
             self._save()
         else:
-            raise ValueError
+            raise ValueError('Модель не проверена')
 
     def _save(self):
         self.objects.save(self)
