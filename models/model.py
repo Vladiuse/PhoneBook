@@ -17,8 +17,6 @@ class Model:
             max_length=6,
         )
 
-
-
     @classmethod
     def _set_class(cls):
         cls.objects.model = cls
@@ -86,7 +84,9 @@ class Model:
         return [field for field_name, field in self.fields.items()]
 
     def get_valid_fields(self):
-        return {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
+        valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
+        valid_fields.pop('pk')
+        return valid_fields
 
     def get_invalid_fields(self):
         incorrect_fields = {}

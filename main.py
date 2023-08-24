@@ -73,6 +73,7 @@ class PhoneBookReader:
         return fields
 
     def get_form_fields(self, initial_data=None, fields=None):
+        print(initial_data, fields)
         form_data = {}
         if initial_data:
             form_data = initial_data
@@ -85,7 +86,7 @@ class PhoneBookReader:
                 print(error_value, error_text)
             user_answer = input(f'Введите {field_name}:')
             form_data[field_name] = user_answer
-        phone = PhoneRecord(None,**form_data)
+        phone = PhoneRecord(pk=None,**form_data)
         if phone.is_valid():
             print('SAVE')
             phone.save()
