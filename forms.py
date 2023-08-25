@@ -3,10 +3,10 @@ from model import PhoneRecord
 from help_tool import message
 
 
-class PhoneEditForm:
+class PhoneRecordForm:
 
     COLLECT_DATA_MSG = 'Заполните форму'
-    UPDATE_DATA_MSG = 'Обновите поля формы (если не вводить значение,поле не будет изменено'
+    UPDATE_DATA_MSG = 'Обновите поля формы (если не вводить значение,поле не будет изменено)'
 
     def __init__(self, *, initial=None):
         self.fields = ['first_name', 'last_name', 'sur_name', 'organization_name', 'work_phone', 'phone']
@@ -40,13 +40,12 @@ class PhoneEditForm:
         for field_name, field in incorrect_fields.items():
             error_value = field['value']
             error_text = field['error']
-            message(error_value, error_text)
+            message(error_text)
             user_answer = input(f'Введите {field_name}:')
             self.initial_data[field_name] = user_answer
         model = self.models_class(**self.initial_data)
         if model.is_valid():
             self.save(model)
-            message('Запись сохранена')
         else:
             message('Eсть некорекнтые поля')
             self.initial_data = model.get_valid_fields()
@@ -80,7 +79,7 @@ class PhoneEditForm:
         model.save()
         message('Запись сохранена')
 
-class PhoneSearchForm(PhoneEditForm):
+class PhoneSearchForm(PhoneRecordForm):
 
     COLLECT_DATA_MSG = 'Введите значения для поиск или пропустите его (Enter)'
 
@@ -117,6 +116,7 @@ class PhoneSearchIdForm:
                 message('ID состоит только из цифр!')
             except ObjectDoesNotExist:
                 message(f'Запись с ID {model_id} не найдена')
+                break
             else:
                 self.model = phone
                 break

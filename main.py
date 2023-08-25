@@ -1,4 +1,4 @@
-from forms import  PhoneSearchIdForm, PhoneEditForm, PhoneSearchForm
+from forms import  PhoneSearchIdForm, PhoneRecordForm, PhoneSearchForm
 from model import PhoneRecord
 from help_tool import TalbePrint
 import math
@@ -35,22 +35,23 @@ class PhoneBookReader:
         self._search(PhoneRecord.objects.filter__in)
 
     def create(self):
-        create_form = PhoneEditForm()
+        create_form = PhoneRecordForm()
         create_form.run()
 
     def edit(self):
         serach_form = PhoneSearchIdForm()
         serach_form.run()
         phone = serach_form.model
-        form = PhoneEditForm(initial=phone)
+        form = PhoneRecordForm(initial=phone)
         form.run()
 
     def delete(self):
         serach_form = PhoneSearchIdForm()
         serach_form.run()
-        phone = serach_form.model
-        phone.delete()
-        print(f'Запись с ID={phone.pk} удалена')
+        if serach_form.model:
+            phone = serach_form.model
+            phone.delete()
+            print(f'Запись с ID={phone.pk} удалена')
 
 
     def show_page(self):
@@ -84,13 +85,16 @@ class PhoneBookReader:
         return not self.current_page == 1
 
     def print_current_page(self):
-        print('Номер страницы:', self.current_page)
+        print(f'Номер страницы: {self.current_page}, всего {self.last_page_num()}', )
 
 
 
 
 class Client:
-    MENU_INPUT_TEXT = 'Введите номер команды:'
+    MENU_INPUT_TEXT = '\nВведите номер команды:'
+    INCORRECT_COMMAND_TEXT = '\nНеверный номер команды!'
+    BACK_MENU_TEXT = 'Назад'
+    EXIT_TEXT = 'Выход'
 
     def __init__(self):
         self.phone_reader = PhoneBookReader()
@@ -118,11 +122,13 @@ class Client:
         if self._printed_text:
             print(self._printed_text)
         user_answer = input(self._input_msg)
+        if user_answer not in self._actions:
+            print(self.INCORRECT_COMMAND_TEXT)
+            return
         command_method = self.get_action(user_answer)
         if command_method.__name__.endswith('_menu'):
             menu_method = command_method
             self.set_menu(menu_method)
-            print('MENU MODE')
         else:
             command_method()
             if self._next_menu is None:
@@ -173,7 +179,10 @@ class Client:
         enumerate_menu_actions = dict()  # TODO make ordered dict
         counter = 1
         for command_text, command in menu_data.items():
-            enumerate_menu_actions[str(counter)] = [command_text, command]
+            if command_text in [self.EXIT_TEXT, self.BACK_MENU_TEXT]:
+                enumerate_menu_actions[str(0)] = [command_text, command]
+            else:
+                enumerate_menu_actions[str(counter)] = [command_text, command]
             counter += 1
         return enumerate_menu_actions
 
@@ -185,7 +194,7 @@ class Client:
             'Добавить запись': self.phone_reader.create,
             'Изменить запись': self.phone_reader.edit,
             'Удалить запись': self.delete_menu,
-            'Выйти': self.bye,
+            self.EXIT_TEXT: self.bye,
         }
         return commands
 
@@ -194,17 +203,16 @@ class Client:
         commands = {
             'Постраничный просмотр': self.page_view_menu,
             'Посмотреть все записи': self.phone_reader.all_phones,
-            'Назад': self.start_menu,
+            self.BACK_MENU_TEXT: self.start_menu,
         }
         return commands
 
 
     def delete_menu(self):
-        self._next_menu = None
+        self._next_menu = self.delete_menu
         commands = {
-            'Найти и удалить': self.search_menu,
             'Удалить по ID': self.phone_reader.delete,
-            'Назад': self.start_menu,
+            self.BACK_MENU_TEXT: self.start_menu,
         }
         return commands
 
@@ -214,24 +222,25 @@ class Client:
             'Поиск (Полное совпадение)': self.phone_reader.search__full,
             'Поиск (Начинаеться с)': self.phone_reader.search__startswith,
             'Поиск (Частичное совпадение)': self.phone_reader.search__in,
-            'Назад': self.start_menu,
+            self.BACK_MENU_TEXT: self.start_menu,
         }
         return commands
 
     def page_view_menu(self):
         self._next_menu = self.page_view_menu
         self.phone_reader.show_page()
-        commands = {
-            'Назад': self.start_menu,
-        }
+        commands = {}
         if self.phone_reader.has_next:
             commands.update({
-                'Сдедующая': self.phone_reader.next,
+                'Сдедующая страница': self.phone_reader.next,
             })
         if self.phone_reader.has_prev:
             commands.update({
-                'Предыдущая': self.phone_reader.prev,
+                'Предыдущая страница': self.phone_reader.prev,
             })
+        commands.update({
+            self.BACK_MENU_TEXT: self.start_menu,
+        })
         return commands
 
 
