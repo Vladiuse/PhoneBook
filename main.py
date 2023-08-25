@@ -16,11 +16,26 @@ class PhoneBookReader:
         phones = PhoneRecord.objects.all()
         TalbePrint(phones).print()
 
-    def search(self):
-        pass
+    def search__full(self):
+        form = PhoneSearchForm()
+        form.run()
+        filter_vals = form.get_filter_vals()
+        qs = PhoneRecord.objects.filter__full(**filter_vals)
+        TalbePrint(qs).print()
 
-    def full_search(self):
-        pass
+    def search__startswith(self):
+        form = PhoneSearchForm()
+        form.run()
+        filter_vals = form.get_filter_vals()
+        qs = PhoneRecord.objects.filter__startswith(**filter_vals)
+        TalbePrint(qs).print()
+
+    def search__in(self):
+        form = PhoneSearchForm()
+        form.run()
+        filter_vals = form.get_filter_vals()
+        qs = PhoneRecord.objects.filter__in(**filter_vals)
+        TalbePrint(qs).print()
 
     def create(self):
         create_form = PhoneEditForm()
@@ -39,6 +54,7 @@ class PhoneBookReader:
         phone = serach_form.model
         phone.delete()
         print(f'Запись с ID={phone.pk} удалена')
+
 
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
@@ -152,20 +168,17 @@ class Client:
 
     def search_menu(self):
         commands = {
-            'Поиск (Полное совпадение)': 'xxx',
-            'Поиск (Начинаеться с)': 'xxx',
-            'Поиск (Частичное совпадение)': 'xxx',
+            'Поиск (Полное совпадение)': self.phone_reader.search__full,
+            'Поиск (Начинаеться с)': self.phone_reader.search__startswith,
+            'Поиск (Частичное совпадение)': self.phone_reader.search__in,
             'Назад': self.start_menu,
         }
         return commands
 
 
 if __name__ == '__main__':
-    form = PhoneSearchForm()
-    form.run()
-    print(form.get_filter_vals())
-    # client = Client()
-    # client.hello()
-    # while True:
-    #     client.run()
+    client = Client()
+    client.hello()
+    while True:
+        client.run()
 
