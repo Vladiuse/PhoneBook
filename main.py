@@ -12,30 +12,25 @@ class PhoneBookReader:
         self.command_title = None
         self.commands = None
 
+    def _search(self, search_func):
+        form = PhoneSearchForm()
+        form.run()
+        filter_vals = form.get_filter_vals()
+        qs = search_func(**filter_vals)
+        TalbePrint(qs).print()
+
     def all_phones(self):
         phones = PhoneRecord.objects.all()
         TalbePrint(phones).print()
 
     def search__full(self):
-        form = PhoneSearchForm()
-        form.run()
-        filter_vals = form.get_filter_vals()
-        qs = PhoneRecord.objects.filter__full(**filter_vals)
-        TalbePrint(qs).print()
+        self._search(PhoneRecord.objects.filter__full)
 
     def search__startswith(self):
-        form = PhoneSearchForm()
-        form.run()
-        filter_vals = form.get_filter_vals()
-        qs = PhoneRecord.objects.filter__startswith(**filter_vals)
-        TalbePrint(qs).print()
+        self._search(PhoneRecord.objects.filter__startswith)
 
     def search__in(self):
-        form = PhoneSearchForm()
-        form.run()
-        filter_vals = form.get_filter_vals()
-        qs = PhoneRecord.objects.filter__in(**filter_vals)
-        TalbePrint(qs).print()
+        self._search(PhoneRecord.objects.filter__in)
 
     def create(self):
         create_form = PhoneEditForm()
