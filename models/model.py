@@ -93,7 +93,8 @@ class Model:
 
     def get_valid_fields(self):
         valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
-        valid_fields.pop('pk')
+        if 'pk' in valid_fields:
+            valid_fields.pop('pk')
         return valid_fields
 
     def get_invalid_fields(self):
