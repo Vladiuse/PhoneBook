@@ -91,6 +91,10 @@ class Model:
     def fields_list(self):
         return [field for field_name, field in self.fields.items()]
 
+    @property
+    def values_list(self):
+        return [field.get_value() for field in self.fields_list]
+
     def get_valid_fields(self):
         valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
         if 'pk' in valid_fields:

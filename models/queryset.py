@@ -1,4 +1,5 @@
 from .db import DataBase
+
 class QuerySet:
 
     def __init__(self, model_class, objects_list):

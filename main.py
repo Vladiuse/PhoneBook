@@ -1,5 +1,6 @@
 from forms import  PhoneSearchIdForm, PhoneEditForm
 from model import PhoneRecord
+from help_tool import TalbePrint
 
 
 class PhoneBookReader:
@@ -144,12 +145,12 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.hello()
-    while True:
-        client.run()
-    # phone = PhoneRecord.objects.get(pk=23)
-    # form = PhoneEditForm()
-    # form.run()
+    # client = Client()
+    # client.hello()
+    # while True:
+    #     client.run()
 
+
+    phones = PhoneRecord.objects.all()
+    TalbePrint(phones).main()
 
