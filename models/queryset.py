@@ -1,10 +1,15 @@
 class QuerySet:
+    """Класс колекции элементов"""
 
     def __init__(self, model_class, objects_list):
         self.models_class = model_class
         self.__objects = objects_list
 
     def __getitem__(self, item):
+        """
+        полкчить один элемент - вернеться модель
+        Получить срез - вернеться QuerySet
+        """
         if isinstance(item, int):
             return self.__objects[item]
         else:

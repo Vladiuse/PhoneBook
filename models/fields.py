@@ -6,6 +6,8 @@ MIN_LENGTH = 0
 
 
 class Field:
+    """Класс подя баззы данных - базовый класс, в коде не используется
+    """
     max_length = MAX_LENGTH
     min_length = MIN_LENGTH
     default_validators = []
@@ -37,12 +39,20 @@ class Field:
 
     @property
     def verbose_name(self):
+        """
+        Человекочитаемое название поля
+        :return:
+        """
         if self._verbose_name:
             return self._verbose_name
         return self.name
 
     def render(self, max_length=None):
-
+        """
+        Перевести строку для вывода баззу данных
+        :param max_length:
+        :return: Значение поля с добавленными пробелами
+        """
         if not max_length:
             max_length = self.max_length
         return f'{self.value: <{max_length}}'
@@ -75,6 +85,10 @@ class Field:
         return self.get_value() <= other.get_value()
 
     def _check_length_attrs(self):
+        """
+        Проверить коректность значений длинны поля
+        :return:
+        """
         if self.min_length > self.max_length:
             error_mgs = f'Атрибут поля {self.verbose_name} min_length не должен быть больше max_length'
             raise FieldError(error_mgs)
@@ -86,10 +100,18 @@ class Field:
             raise FieldError(error_mgs)
 
     def get_value(self):
+        """
+        Получить сзначение поля
+        :return:
+        """
         return self.value
 
     @property
     def _length_validators(self):
+        """
+        Валидация длинны поля
+        :return: Список валидаторов длинны поня
+        """
         return [MaxLengthValidator(self.max_length),
                 MinLengthValidator(self.min_length), ]
 
@@ -97,6 +119,9 @@ class Field:
         self._validate()
 
     def _validate(self):
+        """
+        Провалидировать поле
+        """
         validators = [*self._length_validators, *self.default_validators, *self.validators]
         for validator in validators:
             try:
@@ -106,27 +131,22 @@ class Field:
                 self.is_error = True
 
     def _clean(self):
+        """
+        Отчистить поле
+        """
         self.value = self.value.strip()
 
 
 class CharField(Field):
+    """
+    Текстовое поле
+    """
     field_name = 'CharField'
 
 
 class IntegerField(CharField):
+    """Поле с цифрами"""
     field_name = 'IntegerField'
     default_validators = [
         NumberOnlyRegExValidator()
     ]
-
-class PrimaryKeyField(Field):  # remove
-    field_name = 'PrimaryKeyField'
-
-    def _clean(self):
-        return self.value
-
-    def validate(self):
-        pass
-
-    def set_value(self, value):
-        self.value = value
