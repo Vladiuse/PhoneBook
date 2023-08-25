@@ -5,6 +5,9 @@ from help_tool import message
 
 class PhoneEditForm:
 
+    COLLECT_DATA_MSG = 'Заполните форму'
+    UPDATE_DATA_MSG = 'Обновите поля формы (если не вводить значение,поле не будет изменено'
+
     def __init__(self, *, initial=None):
         self.fields = ['first_name', 'last_name', 'sur_name', 'organization_name', 'work_phone', 'phone']
         self.initial = initial
@@ -51,7 +54,7 @@ class PhoneEditForm:
             return self.fix_validations_errors(incorrect_fields=incorrect_fields)
 
     def _collect_changes(self):
-        message('Обновите поля формы (если не вводить значение,поле не будет изменено')
+        message(self.UPDATE_DATA_MSG)
         for field_name, field_value in self.initial_data.items():
             message(f'Текущее значение: {field_value}')
             user_value = input(f'Новое значение {field_name}: ')
@@ -60,6 +63,7 @@ class PhoneEditForm:
         print('Updated data', self.initial_data)
 
     def collect_data(self):
+        message(self.COLLECT_DATA_MSG)
         if self.initial:
             self._collect_changes()
         else:
@@ -75,6 +79,25 @@ class PhoneEditForm:
         if self.initial:
             model.pk = self.initial.pk
         model.save()
+
+class PhoneSearchForm(PhoneEditForm):
+
+    COLLECT_DATA_MSG = 'Введите значения для поиск или пропустите его (Enter)'
+
+    def __init__(self, *, initial=None):
+        super().__init__(initial=None)
+
+    def run(self):
+        self.collect_data()
+        self._clean()
+
+    def _clean(self):
+        for field_name, field_val in self.initial_data.items():
+            self.initial_data[field_name] = field_val.strip().lower()
+
+    def get_filter_vals(self):
+        return {field_name: field_value for field_name, field_value in self.initial_data.items() if field_value}
+
 
 
 class PhoneSearchIdForm:

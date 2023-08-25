@@ -1,4 +1,4 @@
-from forms import  PhoneSearchIdForm, PhoneEditForm
+from forms import  PhoneSearchIdForm, PhoneEditForm, PhoneSearchForm
 from model import PhoneRecord
 from help_tool import TalbePrint
 
@@ -161,8 +161,9 @@ class Client:
 
 
 if __name__ == '__main__':
-    phones = PhoneRecord.objects.filter__full(first_name='Кузьма')
-    print(phones)
+    form = PhoneSearchForm()
+    form.run()
+    print(form.get_filter_vals())
     # client = Client()
     # client.hello()
     # while True:
