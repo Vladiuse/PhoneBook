@@ -13,11 +13,10 @@ class QuerySet:
         if isinstance(item, int):
             return self.__objects[item]
         else:
-            return QuerySet(self.models_class,self.__objects[item.start:item.stop])
+            return QuerySet(self.models_class, self.__objects[item.start:item.stop])
 
     def __len__(self):
         return len(self.__objects)
 
     def __str__(self):
         return f'<QuerySet>: {[str(obj) for obj in self.__objects]}'
-

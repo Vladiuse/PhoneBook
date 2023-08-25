@@ -22,7 +22,7 @@ class DataBase:
             if table:
                 self.table = table
 
-    def _get_pk_from_file(self, pk_line:str):
+    def _get_pk_from_file(self, pk_line: str):
         """
         Прочитать с файла значение Первичного ключа
         """
@@ -39,7 +39,7 @@ class DataBase:
         self.pk += 1
         return self.pk
 
-    def write(self, text:str):
+    def write(self, text: str):
         """
         Запись данных в БД
         :param text:

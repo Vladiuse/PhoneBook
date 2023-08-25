@@ -4,7 +4,6 @@ from help_tools import message
 
 
 class PhoneRecordForm:
-
     """
     Класс формы модели
     Можно как создавать новую, так и изменять запись из БД
@@ -101,7 +100,6 @@ class PhoneRecordForm:
             user_value = input(f'Введите {field_name}: ')
             self.initial_data[field_name] = user_value
 
-
     def save(self, model):
         """Сохранить форму
         Если есть у модели pk - тогда обновиться уже созданая
@@ -111,8 +109,8 @@ class PhoneRecordForm:
         model.save()
         message('Запись сохранена')
 
-class PhoneSearchForm(PhoneRecordForm):
 
+class PhoneSearchForm(PhoneRecordForm):
     """
     Форма для поиска записей
     """
@@ -138,9 +136,7 @@ class PhoneSearchForm(PhoneRecordForm):
         return {field_name: field_value for field_name, field_value in self.initial_data.items() if field_value}
 
 
-
 class PhoneSearchIdForm:
-
     """
     Форма поиска записи по ID
     """

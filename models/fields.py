@@ -57,7 +57,6 @@ class Field:
             max_length = self.max_length
         return f'{self.value: <{max_length}}'
 
-
     def __repr__(self):
         return f'{self.field_name}: {self.value}'
 
@@ -65,22 +64,22 @@ class Field:
         return len(str(self.get_value()))
 
     def __gt__(self, other):
-        if not isinstance(other,self.__class__):
+        if not isinstance(other, self.__class__):
             raise FieldTypeError(self, other, '<')
         return self.get_value() > other.get_value()
 
     def __lt__(self, other):
-        if not isinstance(other,self.__class__):
+        if not isinstance(other, self.__class__):
             raise FieldTypeError(self, other, '>')
         return self.get_value() < other.get_value()
 
     def __ge__(self, other):
-        if not isinstance(other,self.__class__):
+        if not isinstance(other, self.__class__):
             raise FieldTypeError(self, other, '<=')
         return self.get_value() >= other.get_value()
 
     def __le__(self, other):
-        if not isinstance(other,self.__class__):
+        if not isinstance(other, self.__class__):
             raise FieldTypeError(self, other, '>=')
         return self.get_value() <= other.get_value()
 

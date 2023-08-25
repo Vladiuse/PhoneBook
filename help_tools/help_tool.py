@@ -49,7 +49,6 @@ class TablePrint:
             count = len(self.object)
         message(f'\nЗаписей: {count}')
 
-
     def get_head_array(self):
         """Получения масива для отрисовки шапки таблицы"""
         head = [DataBase.pk_field_name, ]
@@ -70,4 +69,3 @@ class TablePrint:
             line = [self.object.pk, *self.object.values_list]
             body_array.append(line)
         return body_array
-

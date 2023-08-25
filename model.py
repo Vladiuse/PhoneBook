@@ -2,8 +2,8 @@ from validators import *
 from models import Model
 from models import CharField, IntegerField
 
-class PhoneRecord(Model):
 
+class PhoneRecord(Model):
     """
     класс можели записи телефона
     """
@@ -54,4 +54,4 @@ class PhoneRecord(Model):
         return f'<PhoneRec:{self.pk}>'
 
 
-PhoneRecord._set_class() # костыль для предачи Manager текущего класса Model
+PhoneRecord._set_class()  # костыль для предачи Manager текущего класса Model

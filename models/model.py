@@ -2,6 +2,7 @@ from .manager import Manager
 from models.fields import Field
 from .db import DataBase
 
+
 class Model:
     """
     Базовый класс можели
@@ -9,7 +10,7 @@ class Model:
     """
     objects = Manager()
 
-    def __init__(self,pk=None):
+    def __init__(self, pk=None):
         self.pk = pk
         self._errors_messages = {}
         self._set_class()
@@ -21,7 +22,6 @@ class Model:
         Получить класс модели
         """
         cls.objects.model = cls
-
 
     def _set_fields_name(self):
         """
@@ -87,14 +87,12 @@ class Model:
         return DataBase.SEP_CHAR.join(fields_val) + DataBase.NEW_LINE_CHAR
 
     @classmethod
-    def parse(cls, line:str):
+    def parse(cls, line: str):
         """
         Спарсить со строки значени полей и получить экземпляр класса
         """
         pk, *attrs = line.split(DataBase.SEP_CHAR)
-        return cls(*attrs,pk=int(pk))
-
-
+        return cls(*attrs, pk=int(pk))
 
     def save(self):
         """
@@ -120,10 +118,8 @@ class Model:
         """
         self.objects.save(self)
 
-
-
     @property
-    def fields(self) ->dict:
+    def fields(self) -> dict:
         """
         получить словарь с названиями полей: полями
         :return:
@@ -136,36 +132,38 @@ class Model:
         return fields
 
     @property
-    def fields_list(self) ->list:
+    def fields_list(self) -> list:
         """
         Поля в виде списка
         """
         return [field for field_name, field in self.fields.items()]
 
     @property
-    def values_list(self) ->list:
+    def values_list(self) -> list:
         """
         Список о значениями полей
         :return:
         """
         return [field.get_value() for field in self.fields_list]
+
     @property
-    def values(self) ->dict:
+    def values(self) -> dict:
         """
         Словарь с названиями полей и их значениями
         """
         return {field_name: field.get_value() for field_name, field in self.fields.items()}
 
-    def get_valid_fields(self)->dict:
+    def get_valid_fields(self) -> dict:
         """
         Получить словарь с валидными полями
         """
-        valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}
+        valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if
+                        not field.is_error}
         if 'pk' in valid_fields:
             valid_fields.pop('pk')
         return valid_fields
 
-    def get_invalid_fields(self)->dict:
+    def get_invalid_fields(self) -> dict:
         """
         Получить словарь с невалидными полями
         """
@@ -180,5 +178,3 @@ class Model:
                 }
                 incorrect_fields.update(dic)
         return incorrect_fields
-
-

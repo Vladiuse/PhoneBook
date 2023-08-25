@@ -1,5 +1,6 @@
 from main import PhoneRecord
 
+
 def clean_phone(phone):
     # подчищаю номер телефона от Faker от невалидных символов
     return ''.join(char for char in phone if char.isdigit())
@@ -23,5 +24,6 @@ def seed_db(count=10):
         else:
             print(phone)
             raise ZeroDivisionError
+
 
 seed_db()

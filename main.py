@@ -1,4 +1,4 @@
-from forms import  PhoneSearchIdForm, PhoneRecordForm, PhoneSearchForm
+from forms import PhoneSearchIdForm, PhoneRecordForm, PhoneSearchForm
 from model import PhoneRecord
 from help_tools import TablePrint
 import math
@@ -13,7 +13,6 @@ class PhoneBookReader:
         self.command_title = None
         self.commands = None
         self.current_page = 1
-
 
     def _search(self, search_func):
         """
@@ -92,11 +91,9 @@ class PhoneBookReader:
         """
         self.current_page += 1
 
-
     def prev(self):
         """Предедущая страница справочника"""
         self.current_page -= 1
-
 
     def last_page_num(self):
         """
@@ -107,14 +104,12 @@ class PhoneBookReader:
         last_page_num = math.ceil(records_count // self.PAGE_SIZE)
         return last_page_num
 
-
     @property
     def has_next(self):
         """
         Есть ли еще страницы дальще
         """
         return self.current_page < self.last_page_num()
-
 
     @property
     def has_prev(self):
@@ -130,10 +125,7 @@ class PhoneBookReader:
         print(f'Номер страницы: {self.current_page}, всего {self.last_page_num()}', )
 
 
-
-
 class Client:
-
     """Класс управляющий интерфейом командной строки"""
 
     MENU_INPUT_TEXT = '\nВведите номер команды:'
@@ -187,12 +179,12 @@ class Client:
         else:
             # запуск внешних действий
             command_method()
-            if self._next_menu is None: # определить какое меню показывать следующим
+            if self._next_menu is None:  # определить какое меню показывать следующим
                 self.set_menu(self.start_menu)
             else:
                 self.set_menu(self._next_menu)
 
-    def get_action(self, user_answer:str):
+    def get_action(self, user_answer: str):
         """
         Проверка ввода от пользователя
         при exit програма выключиться
@@ -217,7 +209,7 @@ class Client:
         """
         self._printed_text = text
 
-    def set_input_msg(self, msg:str):
+    def set_input_msg(self, msg: str):
         """
         Установить отображаемый текс в input
         """
@@ -232,7 +224,7 @@ class Client:
         self.set_printed_text(self._get_menu_text(enumerated_menu))
         self._input_msg = self.MENU_INPUT_TEXT
 
-    def _get_menu_text(self, enumarated_menu:dict)->str:
+    def _get_menu_text(self, enumarated_menu: dict) -> str:
         """
         получить словарь для текстового отображения в консоле выбраного меню
         коды комманд и их подписи
@@ -245,7 +237,7 @@ class Client:
         text = '\n'.join(lines)
         return text
 
-    def _get_menu_actions(self, enumarated_menu)->dict:
+    def _get_menu_actions(self, enumarated_menu) -> dict:
         """
         преобразовать менб в словарь - с номерами команд и
         связаными с ними функциями
@@ -255,7 +247,7 @@ class Client:
             actions[command_num] = command_data[1]
         return actions
 
-    def _enumerate_menu(self, menu_method)->dict:
+    def _enumerate_menu(self, menu_method) -> dict:
         """
         Пронумеровать выбраное меню (чтоб у команд появились номера)
         Если это команда выхода или вазврата в предыдущее меню - будет задан номер 0
@@ -271,7 +263,7 @@ class Client:
             counter += 1
         return enumerate_menu_actions
 
-    def start_menu(self)->dict:
+    def start_menu(self) -> dict:
         """Стартовое меню"""
         self._next_menu = None
         commands = {
@@ -284,7 +276,7 @@ class Client:
         }
         return commands
 
-    def show_records_menu(self)->dict:
+    def show_records_menu(self) -> dict:
         """Менб просмотра записей справочника"""
         self._next_menu = None
         commands = {
@@ -294,8 +286,7 @@ class Client:
         }
         return commands
 
-
-    def delete_menu(self) ->dict:
+    def delete_menu(self) -> dict:
         """Меню удаления записей"""
         self._next_menu = self.delete_menu
         commands = {
@@ -304,7 +295,7 @@ class Client:
         }
         return commands
 
-    def search_menu(self)->dict:
+    def search_menu(self) -> dict:
         """менб поиска записей справочника"""
         self._next_menu = None
         commands = {
@@ -315,7 +306,7 @@ class Client:
         }
         return commands
 
-    def page_view_menu(self)->dict:
+    def page_view_menu(self) -> dict:
         """Меню постраничного просмотра"""
         self._next_menu = self.page_view_menu
         self.phone_reader.show_page()

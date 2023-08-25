@@ -118,7 +118,7 @@ class Manager:
         qs = QuerySet(self.model, self.get_objects_list())
         return qs
 
-    def filter__full(self, **kwargs):
+    def filter__full(self, **kwargs): #TODO DRY
         """
         Фильтрация элементов по нескольком полям
         Необходимо точное сответвие
@@ -134,7 +134,7 @@ class Manager:
         qs = QuerySet(self.model, models)
         return qs
 
-    def filter__startswith(self, **kwargs):
+    def filter__startswith(self, **kwargs): #TODO DRY
         """
         Фильтрация элементов по нескольком полям
         Выберутся те модели, у которых хотя бы одно поле начинаеться с переданного значения
@@ -150,7 +150,7 @@ class Manager:
         qs = QuerySet(self.model, models)
         return qs
 
-    def filter__in(self, **kwargs):
+    def filter__in(self, **kwargs): #TODO DRY
         """
         Фильтрация элементов по нескольком полям
         Выберутся те модели, у которых хотя бы одно содержит переданную подстроку
