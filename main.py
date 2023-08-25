@@ -13,7 +13,7 @@ class PhoneBookReader:
 
     def all_phones(self):
         phones = PhoneRecord.objects.all()
-        phones.print()
+        TalbePrint(phones).print()
 
 
     def create(self):
@@ -145,12 +145,8 @@ class Client:
 
 
 if __name__ == '__main__':
-    # client = Client()
-    # client.hello()
-    # while True:
-    #     client.run()
-
-
-    phones = PhoneRecord.objects.get(pk=4)
-    TalbePrint(phones).print()
+    client = Client()
+    client.hello()
+    while True:
+        client.run()
 
