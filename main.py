@@ -151,6 +151,6 @@ if __name__ == '__main__':
     #     client.run()
 
 
-    phones = PhoneRecord.objects.all()
-    TalbePrint(phones).main()
+    phones = PhoneRecord.objects.get(pk=4)
+    TalbePrint(phones).print()
 

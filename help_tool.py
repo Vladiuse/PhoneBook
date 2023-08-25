@@ -12,7 +12,7 @@ class TalbePrint:
         self.object = object
         self.padding = padding
 
-    def main(self):
+    def print(self):
         head = self.get_head_array()
         body = self.get_body_array()
         result_array = [head, *body]
@@ -26,11 +26,14 @@ class TalbePrint:
             for elem_pos, elem in enumerate(line):
                 line[elem_pos] = f'{elem: <{coll_max_width[elem_pos]}}'
 
+
+        separate_line = '+' + '-' * (sum(coll_max_width) + 6) + '+'
         for pos, line in enumerate(result_array):
             text_line = '|' + '|'.join(line) + '|'
             print(text_line)
             if pos == 0:
-                print('+' + '-' * (len(text_line) - 2) + '+')
+                print(separate_line)
+
 
     def get_head_array(self):
         head = [DataBase.pk_field_name, ]
@@ -48,7 +51,7 @@ class TalbePrint:
                 line = [model.pk, *model.values_list]
                 body_array.append(line)
         else:
-            line = [self.object.pk, self.object.values_list]
+            line = [self.object.pk, *self.object.values_list]
             body_array.append(line)
         return body_array
 
