@@ -31,21 +31,25 @@ class PhoneEditForm:
         self.initial = initial
         self.initial_data = self.get_initial_data()
         self.models_class = PhoneRecord
-        # self._fields = None
-
         self._is_valid = False
 
+        self.fields = ['first_name', 'last_name', 'sur_name', 'organization_name', 'work_phone', 'phone']
 
-    @staticmethod
-    def _empty_fields():
-        fields = {'first_name': '',
-                  'last_name': '',
-                  'sur_name': '',
-                  'organization_name': '',
-                  'work_phone': '',
-                  'phone': '',
-                  }
-        return fields
+
+    # @staticmethod
+    # def _empty_fields():
+    #     fields = {'first_name': '',
+    #               'last_name': '',
+    #               'sur_name': '',
+    #               'organization_name': '',
+    #               'work_phone': '',
+    #               'phone': '',
+    #               }
+    #     return fields
+
+    def _empty_fields(self):
+        return {field_name: '' for field_name in self.fields}
+
 
     def get_initial_data(self):
         if not self.initial:
@@ -56,36 +60,31 @@ class PhoneEditForm:
                 fields[field_name] = field.get_value()
             return fields
 
-    # def get_form(self):
-    #     fields = {}
-    #     for field_name, field in self.initial_model.fields.items():
-    #         fields[field_name] = field.get_value()
-    #     self._fields = fields
-
-
     def run(self):
+        self.collect_data()
         model = self.models_class(**self.initial_data)
         if model.is_valid():
-            model.save()
+            self.save(model)
         else:
-            self.fix_validations_errors()
+            incorrect_fields = model.get_invalid_fields()
+            self.fix_validations_errors(incorrect_fields=incorrect_fields)
 
-    def fix_validations_errors(self,inccorect_fields=None):
-        for field_name, field in inccorect_fields.items():
+    def fix_validations_errors(self,incorrect_fields=None):
+        for field_name, field in incorrect_fields.items():
             error_value = field['value']
             error_text = field['error']
-            message(error_value, error_text)
+            print(error_value, error_text)
             user_answer = input(f'Введите {field_name}:')
             self.initial_data[field_name] = user_answer
-        phone = self.models_class(**self.initial_data)
-        if phone.is_valid():
+        model = self.models_class(**self.initial_data)
+        if model.is_valid():
             print('SAVE')
-            phone.save()
+            self.save(model)
         else:
-            print('Eсть некорекнтые поля')
-            self.initial_data = phone.get_valid_fields()
-            incorrect_fields = phone.get_invalid_fields()
-            return self.fix_validations_errors(inccorect_fields=incorrect_fields)
+            message('Eсть некорекнтые поля')
+            self.initial_data = model.get_valid_fields()
+            incorrect_fields = model.get_invalid_fields()
+            return self.fix_validations_errors(incorrect_fields=incorrect_fields)
 
     def _collect_changes(self):
         message('Обновите поля формы (если не вводить значение,поле не будет изменено')
@@ -96,8 +95,22 @@ class PhoneEditForm:
                 self.initial_data[field_name] = user_value
         print('Updated data',self.initial_data)
 
-    def save(self):
-        pass
+    def collect_data(self):
+        if self.initial:
+            self._collect_changes()
+        else:
+            self._feed_fields()
+
+    def _feed_fields(self):
+        for field_name, field_value in self.initial_data.items():
+            user_value = input(f'Введите {field_name}: ')
+            self.initial_data[field_name] = user_value
+        print('Collected data',self.initial_data)
+
+    def save(self, model):
+        if self.initial:
+            model.pk = self.initial.pk
+        model.save()
 
 
 

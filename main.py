@@ -185,8 +185,8 @@ if __name__ == '__main__':
     # client.hello()
     # while True:
     #     client.run()
-    phone = PhoneRecord.objects.get(pk=4)
-    form = PhoneEditForm(initial=phone)
+    phone = PhoneRecord.objects.get(pk=23)
+    form = PhoneEditForm()
     form.run()
 
 
