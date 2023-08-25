@@ -65,7 +65,7 @@ class PhoneRecordForm:
         if model.is_valid():
             self.save(model)
         else:
-            message('Eсть некорекнтые поля')
+            message('\nEсть некорекнтые поля')
             self.initial_data = model.get_valid_fields()
             incorrect_fields = model.get_invalid_fields()
             return self.fix_validations_errors(incorrect_fields=incorrect_fields)
@@ -77,7 +77,7 @@ class PhoneRecordForm:
         """
         message(self.UPDATE_DATA_MSG)
         for field_name, field_value in self.initial_data.items():
-            message(f'Текущее значение: {field_value}')
+            message(f'\nТекущее значение: {field_value}')
             user_value = input(f'Новое значение {field_name}: ')
             if user_value:
                 self.initial_data[field_name] = user_value
@@ -107,7 +107,7 @@ class PhoneRecordForm:
         if self.initial:
             model.pk = self.initial.pk
         model.save()
-        message('Запись сохранена')
+        message('\nЗапись сохранена')
 
 
 class PhoneSearchForm(PhoneRecordForm):
@@ -153,9 +153,9 @@ class PhoneSearchIdForm:
                 model_id = int(model_id)
                 phone = self.model_class.objects.get(pk=model_id)
             except ValueError:
-                message('ID состоит только из цифр!')
+                message('\nID состоит только из цифр!')
             except ObjectDoesNotExist:
-                message(f'Запись с ID {model_id} не найдена')
+                message(f'\nЗапись с ID {model_id} не найдена')
                 break
             else:
                 self.model = phone
