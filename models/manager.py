@@ -37,9 +37,12 @@ class Manager:
     def save(self, model):
         if self.objects is None:
             self.get_objects_from_db()
+
         if not model.pk:
             model.pk = self.db.get_new_pk()
-        self.add_object(model)
+            self.add_object(model)
+        else:
+            self.update_object(model)
         self.update_db()
 
     def delete(self, pk):
@@ -47,6 +50,11 @@ class Manager:
         self.update_db()
 
     def add_object(self, obj):
+        self.objects[obj.pk] = obj
+
+    def update_object(self, obj):
+        if obj.pk not in self.objects:
+            raise ValueError('Ошибка обновления, нет такого айди')
         self.objects[obj.pk] = obj
 
     def get_objects_list(self):
