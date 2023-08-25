@@ -4,8 +4,9 @@ from help_tool import TalbePrint
 
 
 class PhoneBookReader:
-    ENTER_COMMAND_NUM_MSG = 'Введите номер команды:'
-    db_file = 'db.call'
+
+    PAG_SIZE = 5
+    CURRENT_PAGE = 1
 
     def __init__(self):
         self.command_title = None
@@ -15,6 +16,11 @@ class PhoneBookReader:
         phones = PhoneRecord.objects.all()
         TalbePrint(phones).print()
 
+    def search(self):
+        pass
+
+    def full_search(self):
+        pass
 
     def create(self):
         create_form = PhoneEditForm()
@@ -118,7 +124,7 @@ class Client:
 
     def start_menu(self):
         commands = {
-            'посмотреть записи': self.phone_reader.all_phones,
+            'Посмотреть записи': self.phone_reader.all_phones,
             'Поиск': self.search_menu,
             'Добавить запись': self.phone_reader.create,
             'Изменить запись': self.phone_reader.edit,
@@ -126,6 +132,15 @@ class Client:
             'Выйти': self.bye,
         }
         return commands
+
+    def show_records_menu(self):
+        commands = {
+            'Посмотреть все записи': self.phone_reader.all_phones,
+            'Постраничный просмотр': self.phone_reader.pagination,
+            'Назад': self.start_menu,
+        }
+        return commands
+
 
     def delete_menu(self):
         commands = {
@@ -137,16 +152,19 @@ class Client:
 
     def search_menu(self):
         commands = {
-            'Поиск по номеру': 'xxx',
-            'Поиск по имени': 'xxx',
+            'Поиск (Полное совпадение)': 'xxx',
+            'Поиск (Начинаеться с)': 'xxx',
+            'Поиск (Частичное совпадение)': 'xxx',
             'Назад': self.start_menu,
         }
         return commands
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.hello()
-    while True:
-        client.run()
+    phones = PhoneRecord.objects.filter__full(first_name='Кузьма')
+    print(phones)
+    # client = Client()
+    # client.hello()
+    # while True:
+    #     client.run()
 

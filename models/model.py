@@ -94,6 +94,9 @@ class Model:
     @property
     def values_list(self):
         return [field.get_value() for field in self.fields_list]
+    @property
+    def values(self):
+        return {field_name: field.get_value() for field_name, field in self.fields.items()}
 
     def get_valid_fields(self):
         valid_fields = {field_name: field.get_value() for field_name, field in self.fields.items() if not field.is_error}

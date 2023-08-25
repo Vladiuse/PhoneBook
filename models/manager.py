@@ -58,6 +58,8 @@ class Manager:
         self.objects[obj.pk] = obj
 
     def get_objects_list(self):
+        if self.objects is None:
+            self.get_objects_from_db()
         return [model for pk, model in self.objects.items()]
 
     def get(self,*,pk):
@@ -75,4 +77,35 @@ class Manager:
         self.get_objects_from_db()
         qs = QuerySet(self.model, self.get_objects_list())
         return qs
+
+    def filter__full(self, **kwargs):
+        models = []
+        for model in self.get_objects_list():
+            model_value = model.values
+            match = [model_value[filter_key].lower() == filter_val for filter_key, filter_val in kwargs.items()]
+            if all(match):
+                models.append(model)
+        qs = QuerySet(self.model, models)
+        return qs
+
+    def filter__startswith(self, **kwargs):
+        models = []
+        for model in self.get_objects_list():
+            model_value = model.values
+            match = [model_value[filter_key].lower().startswith(filter_val) for filter_key, filter_val in kwargs.items()]
+            if any(match):
+                models.append(model)
+        qs = QuerySet(self.model, models)
+        return qs
+
+    def filter__in(self, **kwargs):
+        models = []
+        for model in self.get_objects_list():
+            model_value = model.values
+            match = [filter_val in model_value[filter_key].lower() for filter_key, filter_val in kwargs.items()]
+            if any(match):
+                models.append(model)
+        qs = QuerySet(self.model, models)
+        return qs
+
 
