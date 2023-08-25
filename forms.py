@@ -1,4 +1,5 @@
 from exceptions import ObjectDoesNotExist
+from model import PhoneRecord
 
 class PhoneRecordForm:
 
@@ -26,9 +27,9 @@ class PhoneRecordForm:
 
 class PhoneSearchIdForm:
 
-    def __init__(self, model_class):
+    def __init__(self):
         self.pk = None
-        self.model_class = model_class
+        self.model_class = PhoneRecord
         self.model = None
 
     def run(self):

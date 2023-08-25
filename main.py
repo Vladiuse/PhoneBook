@@ -70,7 +70,7 @@ class PhoneBookReader:
 
     def delete_form(self):
         while True:
-            serach_form = PhoneSearchIdForm(model_class=PhoneRecord)
+            serach_form = PhoneSearchIdForm()
             serach_form.run()
             phone = serach_form.model
             phone.delete()
