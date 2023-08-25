@@ -3,6 +3,9 @@ import re
 from exceptions import *
 
 class LenValidator:
+    """
+    Валидатор длинны
+    """
     def __init__(self, limit_value):
         self.limit_value = limit_value
 
@@ -12,17 +15,26 @@ class LenValidator:
 
 
 class MaxLengthValidator(LenValidator):
+    """
+    Валидатор макссимальной длинны
+    """
 
     def compare(self, a, b):
         return a >= b
 
 
 class MinLengthValidator(LenValidator):
+    """
+    Валидатор минимальной длинны
+    """
     def compare(self, a, b):
         return a <= b
 
 
 class RegExValidator:
+    """
+    Валидатор строки по решулярномиу выражению
+    """
     reg_ex = ''
     error_text = ''
 
@@ -32,19 +44,16 @@ class RegExValidator:
 
 
 class NameRegExValidator(RegExValidator):
+    """
+    Валидатор имени - допускаються толко буквы
+    """
     reg_ex = '^[A-Za-zА-ЯЁа-яё]*$'
     error_text = 'Разрешены только руские и английские буквы'
 
 
 class NumberOnlyRegExValidator(RegExValidator):
+    """
+    Валидатор номера - допускаються только цифры
+    """
     reg_ex = '^\d*$'
     error_text = 'Разрешены только цифры'
-#
-#
-# class PrimaryKeyValidator:
-#
-#     def __call__(self, value):
-#         try:
-#             int(value)
-#         except ValueError:
-#             raise ValidationError('ID должен состоять только из цифр')

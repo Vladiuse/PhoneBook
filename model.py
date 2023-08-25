@@ -4,6 +4,13 @@ from models import CharField, IntegerField
 
 class PhoneRecord(Model):
 
+    """
+    класс можели записи телефона
+    """
+
+    # fields_map - это костылек, тк не смог получить список полей без
+    # вызова __init__(те создании экземпляра)
+    # пришлось просто их руками записать
     fields_map = ['first_name', 'last_name', 'sur_name', 'organization_name', 'work_phone', 'phone']
 
     def __init__(self, first_name, last_name, sur_name,
@@ -47,4 +54,4 @@ class PhoneRecord(Model):
         return f'<PhoneRec:{self.pk}>'
 
 
-PhoneRecord._set_class()
+PhoneRecord._set_class() # костыль для предачи Manager текущего класса Model
