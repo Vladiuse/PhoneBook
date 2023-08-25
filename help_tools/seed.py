@@ -1,10 +1,12 @@
 from main import PhoneRecord
 
 def clean_phone(phone):
+    # подчищаю номер телефона от Faker от невалидных символов
     return ''.join(char for char in phone if char.isdigit())
 
 
 def seed_db(count=10):
+    # Заподнить базу данных фейковыми значениями
     from faker import Faker
     faker = Faker('ru')
     for _ in range(count):

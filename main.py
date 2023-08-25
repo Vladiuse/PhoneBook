@@ -1,6 +1,6 @@
 from forms import  PhoneSearchIdForm, PhoneRecordForm, PhoneSearchForm
 from model import PhoneRecord
-from help_tools import TalbePrint
+from help_tools import TablePrint
 import math
 
 
@@ -19,11 +19,11 @@ class PhoneBookReader:
         form.run()
         filter_vals = form.get_filter_vals()
         qs = search_func(**filter_vals)
-        TalbePrint(qs).print()
+        TablePrint(qs).print()
 
     def all_phones(self):
         phones = PhoneRecord.objects.all()
-        TalbePrint(phones).print()
+        TablePrint(phones).print()
 
     def search__full(self):
         self._search(PhoneRecord.objects.filter__full)
@@ -58,7 +58,7 @@ class PhoneBookReader:
         start = self.current_page * self.PAGE_SIZE - self.PAGE_SIZE
         end = self.current_page * self.PAGE_SIZE
         phones = PhoneRecord.objects.all()[start:end]
-        TalbePrint(phones).print()
+        TablePrint(phones).print()
         self.print_current_page()
 
     def next(self):

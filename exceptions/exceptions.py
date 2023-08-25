@@ -1,4 +1,5 @@
 class FieldError(Exception):
+    """Ошибка поля"""
 
     def __init__(self, msg):
         self.mgs = msg
@@ -11,6 +12,7 @@ class FieldError(Exception):
 
 
 class FieldTypeError(FieldError):
+    """Ошибка сравнения полей"""
 
     def __init__(self,obj_1, obj_2, operation):
         self.mgs = f"'{operation}' not supported between instances of '{obj_1.__class__.__name__}' and '{obj_2.__class__.__name__}"
@@ -18,6 +20,7 @@ class FieldTypeError(FieldError):
 
 
 class ValidationError(Exception):
+    """Ошиюка валидации"""
     def __init__(self, msg):
         self.mgs = msg
 
@@ -26,4 +29,5 @@ class ValidationError(Exception):
 
 
 class ObjectDoesNotExist(Exception):
+    """Модель не найдена"""
     pass
