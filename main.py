@@ -1,11 +1,8 @@
 from fields import *
 from models import Model
-from forms import PhoneRecordForm, PhoneSearchIdForm
+from forms import PhoneRecordForm, PhoneSearchIdForm, PhoneEditForm
 from model import PhoneRecord
-def message(msg):
-    print(msg)
-
-
+from help_tool import message
 
 class PhoneBookReader:
     ENTER_COMMAND_NUM_MSG = 'Введите номер команды:'
@@ -54,19 +51,15 @@ class PhoneBookReader:
 
     def edit_form(self):
         while True:
-            model_id = input('Введите ID записи: ')
-            try:
-                model_id = int(model_id)
-            except ValueError:
-                print('ID состоит только из цифр!')
-            else:
-                phone = PhoneRecord.objects.get(pk=model_id)
-                message('Обновите поля формы (если не вводить значение,поле не будет изменено')
-                form = PhoneRecordForm.get_form(phone)
-                for field_name, field_value in form.items():
-                    message(f'Текущее значение: {field_value}')
-                    input(f'Новое значение {field_name}: ')
-                break
+            serach_form = PhoneSearchIdForm()
+            serach_form.run()
+            phone = serach_form.model
+            message('Обновите поля формы (если не вводить значение,поле не будет изменено')
+            form = PhoneRecordForm.get_form(phone)
+            for field_name, field_value in form.items():
+                message(f'Текущее значение: {field_value}')
+                input(f'Новое значение {field_name}: ')
+            break
 
     def delete_form(self):
         while True:
@@ -188,8 +181,12 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.hello()
-    while True:
-        client.run()
+    # client = Client()
+    # client.hello()
+    # while True:
+    #     client.run()
+    phone = PhoneRecord.objects.get(pk=4)
+    form = PhoneEditForm(initial=phone)
+    form.run()
+
 
