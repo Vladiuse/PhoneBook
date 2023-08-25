@@ -33,6 +33,13 @@ class TalbePrint:
             print(text_line)
             if pos == 0:
                 print(separate_line)
+        message(self._print_lines_count())
+
+    def _print_lines_count(self):
+        count = 1
+        if isinstance(self.object, QuerySet):
+            count = len(self.object)
+        print(f'\nЗаписей: {count}')
 
 
     def get_head_array(self):
