@@ -58,6 +58,7 @@ class PhoneBookReader:
         end = self.current_page * self.PAGE_SIZE
         phones = PhoneRecord.objects.all()[start:end]
         TalbePrint(phones).print()
+        self.print_current_page()
 
     def next(self):
         self.current_page += 1
@@ -82,6 +83,9 @@ class PhoneBookReader:
     def has_prev(self):
         return not self.current_page == 1
 
+    def print_current_page(self):
+        print('Номер страницы:', self.current_page)
+
 
 
 
@@ -95,6 +99,8 @@ class Client:
         self._printed_text = ''
         self._command_mode = True
         self.set_menu(self.start_menu)
+
+        self._next_menu = None
 
     def hello(self):
         msg = """
@@ -118,8 +124,11 @@ class Client:
             self.set_menu(menu_method)
             print('MENU MODE')
         else:
-            self.set_menu(self.start_menu)
             command_method()
+            if self._next_menu is None:
+                self.set_menu(self.start_menu)
+            else:
+                self.set_menu(self._next_menu)
 
     def get_action(self, user_answer):
         if user_answer == 'exit':
@@ -169,6 +178,7 @@ class Client:
         return enumerate_menu_actions
 
     def start_menu(self):
+        self._next_menu = None
         commands = {
             'Посмотреть записи': self.show_records_menu,
             'Поиск': self.search_menu,
@@ -180,6 +190,7 @@ class Client:
         return commands
 
     def show_records_menu(self):
+        self._next_menu = None
         commands = {
             'Постраничный просмотр': self.page_view_menu,
             'Посмотреть все записи': self.phone_reader.all_phones,
@@ -189,6 +200,7 @@ class Client:
 
 
     def delete_menu(self):
+        self._next_menu = None
         commands = {
             'Найти и удалить': self.search_menu,
             'Удалить по ID': self.phone_reader.delete,
@@ -197,6 +209,7 @@ class Client:
         return commands
 
     def search_menu(self):
+        self._next_menu = None
         commands = {
             'Поиск (Полное совпадение)': self.phone_reader.search__full,
             'Поиск (Начинаеться с)': self.phone_reader.search__startswith,
@@ -206,6 +219,7 @@ class Client:
         return commands
 
     def page_view_menu(self):
+        self._next_menu = self.page_view_menu
         self.phone_reader.show_page()
         commands = {
             'Назад': self.start_menu,
@@ -222,8 +236,9 @@ class Client:
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.hello()
-    while True:
-        client.run()
-
+    # client = Client()
+    # client.hello()
+    # while True:
+    #     client.run()
+    phone = PhoneRecord.objects.get(pk=4)
+    TalbePrint(phone).print()

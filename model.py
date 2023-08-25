@@ -4,6 +4,8 @@ from fields import CharField, IntegerField
 
 class PhoneRecord(Model):
 
+    fields_map = ['first_name', 'last_name', 'sur_name', 'organization_name', 'work_phone', 'phone']
+
     def __init__(self, first_name, last_name, sur_name,
                  organization_name, work_phone, phone, **kwargs):
         super().__init__(**kwargs)

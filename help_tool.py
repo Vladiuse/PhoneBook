@@ -3,7 +3,7 @@ from models.queryset import QuerySet
 
 
 def message(msg, *args, **kwargs):
-    print(msg, *args, **kwargs)
+    print(msg, *args, **kwargs, )
 
 
 class TalbePrint:
@@ -30,25 +30,28 @@ class TalbePrint:
         separate_line = '+' + '-' * (sum(coll_max_width) + 6) + '+'
         for pos, line in enumerate(result_array):
             text_line = '|' + '|'.join(line) + '|'
-            print(text_line)
+            message(text_line)
             if pos == 0:
-                print(separate_line)
-        message(self._print_lines_count())
+                message(separate_line)
 
     def _print_lines_count(self):
         count = 1
         if isinstance(self.object, QuerySet):
             count = len(self.object)
-        print(f'\nЗаписей: {count}')
+        message(f'\nЗаписей: {count}')
 
 
     def get_head_array(self):
         head = [DataBase.pk_field_name, ]
-        obj = self.object
         if isinstance(self.object, QuerySet):
-            obj = self.object[0]
-        model_fields_names = [field.verbose_name for field in obj.fields_list]
-        head.extend(model_fields_names)
+            head.extend(self.object.models_class.fields_map)
+        else:
+            head.extend(self.object.fields_map)
+        # obj = self.object
+        # if isinstance(self.object, QuerySet):
+        #     obj = self.object[0]
+        # model_fields_names = [field.verbose_name for field in obj.fields_list]
+        # head.extend(model_fields_names)
         return head
 
     def get_body_array(self):
