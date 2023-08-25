@@ -1,16 +1,18 @@
 from forms import  PhoneSearchIdForm, PhoneEditForm, PhoneSearchForm
 from model import PhoneRecord
 from help_tool import TalbePrint
+import math
 
 
 class PhoneBookReader:
 
-    PAG_SIZE = 5
-    CURRENT_PAGE = 1
+    PAGE_SIZE = 5
 
     def __init__(self):
         self.command_title = None
         self.commands = None
+        self.current_page = 1
+
 
     def _search(self, search_func):
         form = PhoneSearchForm()
@@ -51,6 +53,38 @@ class PhoneBookReader:
         print(f'Запись с ID={phone.pk} удалена')
 
 
+    def show_page(self):
+        start = self.current_page * self.PAGE_SIZE - self.PAGE_SIZE
+        end = self.current_page * self.PAGE_SIZE
+        phones = PhoneRecord.objects.all()[start:end]
+        TalbePrint(phones).print()
+
+    def next(self):
+        self.current_page += 1
+
+
+    def prev(self):
+        self.current_page -= 1
+
+
+    def last_page_num(self):
+        records_count = PhoneRecord.objects.count()
+        last_page_num = math.ceil(records_count // self.PAGE_SIZE)
+        return last_page_num
+
+
+    @property
+    def has_next(self):
+        return self.current_page < self.last_page_num()
+
+
+    @property
+    def has_prev(self):
+        return not self.current_page == 1
+
+
+
+
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
 
@@ -82,6 +116,7 @@ class Client:
         if command_method.__name__.endswith('_menu'):
             menu_method = command_method
             self.set_menu(menu_method)
+            print('MENU MODE')
         else:
             self.set_menu(self.start_menu)
             command_method()
@@ -135,7 +170,7 @@ class Client:
 
     def start_menu(self):
         commands = {
-            'Посмотреть записи': self.phone_reader.all_phones,
+            'Посмотреть записи': self.show_records_menu,
             'Поиск': self.search_menu,
             'Добавить запись': self.phone_reader.create,
             'Изменить запись': self.phone_reader.edit,
@@ -146,8 +181,8 @@ class Client:
 
     def show_records_menu(self):
         commands = {
+            'Постраничный просмотр': self.page_view_menu,
             'Посмотреть все записи': self.phone_reader.all_phones,
-            'Постраничный просмотр': self.phone_reader.pagination,
             'Назад': self.start_menu,
         }
         return commands
@@ -168,6 +203,21 @@ class Client:
             'Поиск (Частичное совпадение)': self.phone_reader.search__in,
             'Назад': self.start_menu,
         }
+        return commands
+
+    def page_view_menu(self):
+        self.phone_reader.show_page()
+        commands = {
+            'Назад': self.start_menu,
+        }
+        if self.phone_reader.has_next:
+            commands.update({
+                'Сдедующая': self.phone_reader.next,
+            })
+        if self.phone_reader.has_prev:
+            commands.update({
+                'Предыдущая': self.phone_reader.prev,
+            })
         return commands
 
 

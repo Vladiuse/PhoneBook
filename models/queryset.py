@@ -7,7 +7,10 @@ class QuerySet:
         self.__objects = objects_list
 
     def __getitem__(self, item):
-        return self.__objects[item]
+        if isinstance(item, int):
+            return self.__objects[item]
+        else:
+            return QuerySet(self.models_class,self.__objects[item.start:item.stop])
 
     def __len__(self):
         return len(self.__objects)

@@ -40,3 +40,6 @@ class DataBase:
         rows = self.table.split(self.NEW_LINE_CHAR)
         rows.pop()
         return rows
+
+    def count(self):
+        return self.pk

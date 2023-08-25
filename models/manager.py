@@ -108,4 +108,9 @@ class Manager:
         qs = QuerySet(self.model, models)
         return qs
 
+    def count(self):
+        if self.objects is None:
+            self.get_objects_from_db()
+        return self.db.count()
+
 
