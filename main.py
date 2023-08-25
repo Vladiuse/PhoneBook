@@ -1,8 +1,6 @@
-from fields import *
-from models import Model
-from forms import PhoneRecordForm, PhoneSearchIdForm, PhoneEditForm
+from forms import  PhoneSearchIdForm, PhoneEditForm
 from model import PhoneRecord
-from help_tool import message
+
 
 class PhoneBookReader:
     ENTER_COMMAND_NUM_MSG = 'Введите номер команды:'
@@ -16,59 +14,24 @@ class PhoneBookReader:
         phones = PhoneRecord.objects.all()
         phones.print()
 
-    def form_fields(self):
-        fields = {'first_name': '',
-                  'last_name': '',
-                  'sur_name': '',
-                  'organization_name': '',
-                  'work_phone': '',
-                  'phone': '',
-                  }
-        return fields
 
-    def create(self, initial_data=None, fields=None):
-        form_data = {}
-        if initial_data:
-            form_data = initial_data
-        if not fields:
-            fields = PhoneRecordForm.get_form()
-        for field_name, error in fields.items():
-            if error:
-                error_value = error['value']
-                error_text = error['error']
-                print(error_value, error_text)
-            user_answer = input(f'Введите {field_name}:')
-            form_data[field_name] = user_answer
-        phone = PhoneRecord(**form_data)
-        if phone.is_valid():
-            print('SAVE')
-            phone.save()
-        else:
-            print('Eсть некорекнтые поля')
-            correct_fields = phone.get_valid_fields()
-            incorrect_fields = phone.get_invalid_fields()
-            return self.create(initial_data=correct_fields, fields=incorrect_fields)
+    def create(self):
+        create_form = PhoneEditForm()
+        create_form.run()
 
-    def edit_form(self):
-        while True:
-            serach_form = PhoneSearchIdForm()
-            serach_form.run()
-            phone = serach_form.model
-            message('Обновите поля формы (если не вводить значение,поле не будет изменено')
-            form = PhoneRecordForm.get_form(phone)
-            for field_name, field_value in form.items():
-                message(f'Текущее значение: {field_value}')
-                input(f'Новое значение {field_name}: ')
-            break
+    def edit(self):
+        serach_form = PhoneSearchIdForm()
+        serach_form.run()
+        phone = serach_form.model
+        form = PhoneEditForm(initial=phone)
+        form.run()
 
-    def delete_form(self):
-        while True:
-            serach_form = PhoneSearchIdForm()
-            serach_form.run()
-            phone = serach_form.model
-            phone.delete()
-            print(f'Запись с ID={phone.pk} удалена')
-            break
+    def delete(self):
+        serach_form = PhoneSearchIdForm()
+        serach_form.run()
+        phone = serach_form.model
+        phone.delete()
+        print(f'Запись с ID={phone.pk} удалена')
 
 class Client:
     MENU_INPUT_TEXT = 'Введите номер команды:'
@@ -157,7 +120,7 @@ class Client:
             'посмотреть записи': self.phone_reader.all_phones,
             'Поиск': self.search_menu,
             'Добавить запись': self.phone_reader.create,
-            'Изменить запись': self.phone_reader.edit_form,
+            'Изменить запись': self.phone_reader.edit,
             'Удалить запись': self.delete_menu,
             'Выйти': self.bye,
         }
@@ -166,8 +129,8 @@ class Client:
     def delete_menu(self):
         commands = {
             'Найти и удалить': self.search_menu,
-            'Удалить по ID': self.phone_reader.delete_form,
-            'Выйти': self.bye,
+            'Удалить по ID': self.phone_reader.delete,
+            'Назад': self.start_menu,
         }
         return commands
 
@@ -181,12 +144,12 @@ class Client:
 
 
 if __name__ == '__main__':
-    # client = Client()
-    # client.hello()
-    # while True:
-    #     client.run()
-    phone = PhoneRecord.objects.get(pk=23)
-    form = PhoneEditForm()
-    form.run()
+    client = Client()
+    client.hello()
+    while True:
+        client.run()
+    # phone = PhoneRecord.objects.get(pk=23)
+    # form = PhoneEditForm()
+    # form.run()
 
 
