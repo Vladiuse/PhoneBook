@@ -19,13 +19,6 @@ class PhoneBookReader:
         phones = PhoneRecord.objects.all()
         phones.print()
 
-    def create_record(self, **kwargs):
-        pass
-
-    def get_by_id(self, id):
-        phone = PhoneRecord.objects.get(pk=id)
-        print(phone)
-
     def form_fields(self):
         fields = {'first_name': '',
                   'last_name': '',
@@ -36,7 +29,7 @@ class PhoneBookReader:
                   }
         return fields
 
-    def get_form_fields(self, initial_data=None, fields=None):
+    def create(self, initial_data=None, fields=None):
         form_data = {}
         if initial_data:
             form_data = initial_data
@@ -57,7 +50,7 @@ class PhoneBookReader:
             print('Eсть некорекнтые поля')
             correct_fields = phone.get_valid_fields()
             incorrect_fields = phone.get_invalid_fields()
-            return self.get_form_fields(initial_data=correct_fields, fields=incorrect_fields)
+            return self.create(initial_data=correct_fields, fields=incorrect_fields)
 
     def edit_form(self):
         while True:
@@ -170,7 +163,7 @@ class Client:
         commands = {
             'посмотреть записи': self.phone_reader.all_phones,
             'Поиск': self.search_menu,
-            'Добавить запись': self.phone_reader.get_form_fields,
+            'Добавить запись': self.phone_reader.create,
             'Изменить запись': self.phone_reader.edit_form,
             'Удалить запись': self.delete_menu,
             'Выйти': self.bye,
