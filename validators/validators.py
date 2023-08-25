@@ -43,7 +43,7 @@ class RegExValidator:
 
     def __call__(self, value):
         if not re.match(self.reg_ex, value):
-            raise ValidationError(f'Значение {value} не подходит под шаблон {self.reg_ex}')
+            raise ValidationError(f'{self.error_text}: Значение "{value}" не подходит под шаблон {self.reg_ex}')
 
 
 class NameRegExValidator(RegExValidator):
