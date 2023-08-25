@@ -119,7 +119,7 @@ class IntegerField(CharField):
         NumberOnlyRegExValidator()
     ]
 
-class PrimaryKeyField(Field):
+class PrimaryKeyField(Field):  # remove
     field_name = 'PrimaryKeyField'
 
     def _clean(self):

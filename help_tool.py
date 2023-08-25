@@ -34,6 +34,8 @@ class TalbePrint:
             if pos == 0:
                 message(separate_line)
 
+        self._print_lines_count()
+
     def _print_lines_count(self):
         count = 1
         if isinstance(self.object, QuerySet):

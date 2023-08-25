@@ -40,13 +40,13 @@ class PhoneEditForm:
         for field_name, field in incorrect_fields.items():
             error_value = field['value']
             error_text = field['error']
-            print(error_value, error_text)
+            message(error_value, error_text)
             user_answer = input(f'Введите {field_name}:')
             self.initial_data[field_name] = user_answer
         model = self.models_class(**self.initial_data)
         if model.is_valid():
-            print('SAVE')
             self.save(model)
+            message('Запись сохранена')
         else:
             message('Eсть некорекнтые поля')
             self.initial_data = model.get_valid_fields()
@@ -60,7 +60,6 @@ class PhoneEditForm:
             user_value = input(f'Новое значение {field_name}: ')
             if user_value:
                 self.initial_data[field_name] = user_value
-        print('Updated data', self.initial_data)
 
     def collect_data(self):
         message(self.COLLECT_DATA_MSG)
@@ -73,12 +72,13 @@ class PhoneEditForm:
         for field_name, field_value in self.initial_data.items():
             user_value = input(f'Введите {field_name}: ')
             self.initial_data[field_name] = user_value
-        print('Collected data', self.initial_data)
+
 
     def save(self, model):
         if self.initial:
             model.pk = self.initial.pk
         model.save()
+        message('Запись сохранена')
 
 class PhoneSearchForm(PhoneEditForm):
 
@@ -114,9 +114,9 @@ class PhoneSearchIdForm:
                 model_id = int(model_id)
                 phone = self.model_class.objects.get(pk=model_id)
             except ValueError:
-                print('ID состоит только из цифр!')
+                message('ID состоит только из цифр!')
             except ObjectDoesNotExist:
-                print(f'Запись с ID {model_id} не найдена')
+                message(f'Запись с ID {model_id} не найдена')
             else:
                 self.model = phone
                 break

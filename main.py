@@ -236,9 +236,7 @@ class Client:
 
 
 if __name__ == '__main__':
-    # client = Client()
-    # client.hello()
-    # while True:
-    #     client.run()
-    phone = PhoneRecord.objects.get(pk=4)
-    TalbePrint(phone).print()
+    client = Client()
+    client.hello()
+    while True:
+        client.run()
