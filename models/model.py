@@ -1,5 +1,5 @@
 from .manager import Manager
-from fields import Field, PrimaryKeyField
+from models.fields import Field
 from .db import DataBase
 
 class Model:

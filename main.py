@@ -1,12 +1,12 @@
 from forms import  PhoneSearchIdForm, PhoneRecordForm, PhoneSearchForm
 from model import PhoneRecord
-from help_tool import TalbePrint
+from help_tools import TalbePrint
 import math
 
 
 class PhoneBookReader:
 
-    PAGE_SIZE = 5
+    PAGE_SIZE = 10
 
     def __init__(self):
         self.command_title = None

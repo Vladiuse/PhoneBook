@@ -1,6 +1,6 @@
 from validators import *
 from models import Model
-from fields import CharField, IntegerField
+from models import CharField, IntegerField
 
 class PhoneRecord(Model):
 
